@@ -22,8 +22,8 @@ for j = 2 to A.length
 ```
 
 **Code Links:**
-- [SelectionSort.cpp (C++)](C++/Sorting(Comparison)/SelectionSort.cpp)
-- [SelectionSort.py (Python)](Python/Sorting(Comparison)/SelectionSort.py)
+- [SelectionSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/SelectionSort.cpp)
+- [SelectionSort.py (Python)](arrayOrVector/Sorting(Comparison)/SelectionSort.py)
 
 ---
 
@@ -42,8 +42,8 @@ for i = 0 to A.length - 1
 ```
 
 **Code Links:**
-- [BubbleSort.cpp (C++)](C++/Sorting(Comparison)/BubbleSort.cpp)
-- [BubbleSort.py (Python)](Python/Sorting(Comparison)/BubbleSort.py)
+- [BubbleSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/BubbleSort.cpp)
+- [BubbleSort.py (Python)](arrayOrVector/Sorting(Comparison)/BubbleSort.py)
 
 ---
 
@@ -65,8 +65,8 @@ for i = 1 to A.length - 1
 ```
 
 **Code Links:**
-- [InsertionSort.cpp (C++)](C++/Sorting(Comparison)/InsertionSort.cpp)
-- [InsertionSort.py (Python)](Python/Sorting(Comparison)/InsertionSort.py)
+- [InsertionSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/InsertionSort.cpp)
+- [InsertionSort.py (Python)](arrayOrVector/Sorting(Comparison)/InsertionSort.py)
 
 ---
 
@@ -92,8 +92,8 @@ function merge(A, left, mid, right)
 ```
 
 **Code Links:**
-- [MergeSort.cpp (C++)](C++/Sorting(Comparison)/MergeSort.cpp)
-- [MergeSort.py (Python)](Python/Sorting(Comparison)/MergeSort.py)
+- [MergeSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/MergeSort.cpp)
+- [MergeSort.py (Python)](arrayOrVector/Sorting(Comparison)/MergeSort.py)
 
 ---
 
@@ -122,8 +122,8 @@ function partition(A, low, high)
 ```
 
 **Code Links:**
-- [QuickSort.cpp (C++)](C++/Sorting(Comparison)/QuickSort.cpp)
-- [QuickSort.py (Python)](Python/Sorting(Comparison)/QuickSort.py)
+- [QuickSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/QuickSort.cpp)
+- [QuickSort.py (Python)](arrayOrVector/Sorting(Comparison)/QuickSort.py)
 
 ---
 
@@ -149,6 +149,6 @@ function heapify(A, i, n)
 ```
 
 **Code Links:**
-- [HeapSort.cpp (C++)](C++/Sorting(Comparison)/HeapSort.cpp)
-- [HeapSort.py (Python)](Python/Sorting(Comparison)/HeapSort.py)
+- [HeapSort.cpp (C++)](arrayOrVector/Sorting(Comparison)/HeapSort.cpp)
+- [HeapSort.py (Python)](arrayOrVector/Sorting(Comparison)/HeapSort.py)
 
