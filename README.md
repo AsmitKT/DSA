@@ -107,49 +107,602 @@ Arrays are contiguous lists of elements that can be indexed in O(1) time. Access
   - [`array_module.py`](Arrays/Implementation/Python/array_module.py)
   - [`array_numpy.py`](Arrays/Implementation/Python/array_numpy.py)
 
+---
+
 ### Array: Algorithms
 
 #### Sorting
 
 ##### Comparison
-- [`bubble_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/bubble_sort.cpp) · [`bubble_sort.py`](Arrays/Algorithms/Sorting/Comparison/bubble_sort.py)
-- [`selection_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/selection_sort.cpp) · [`selection_sort.py`](Arrays/Algorithms/Sorting/Comparison/selection_sort.py)
-- [`insertion_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/insertion_sort.cpp) · [`insertion_sort.py`](Arrays/Algorithms/Sorting/Comparison/insertion_sort.py)
-- [`shell_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/shell_sort.cpp) · [`shell_sort.py`](Arrays/Algorithms/Sorting/Comparison/shell_sort.py)
-- [`merge_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/merge_sort.cpp) · [`merge_sort.py`](Arrays/Algorithms/Sorting/Comparison/merge_sort.py)
-- [`quick_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/quick_sort.cpp) · [`quick_sort.py`](Arrays/Algorithms/Sorting/Comparison/quick_sort.py)
-- [`heap_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/heap_sort.cpp) · [`heap_sort.py`](Arrays/Algorithms/Sorting/Comparison/heap_sort.py)
-- [`tim_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/tim_sort.cpp) · [`tim_sort.py`](Arrays/Algorithms/Sorting/Comparison/tim_sort.py)
-- [`intro_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/intro_sort.cpp) · [`intro_sort.py`](Arrays/Algorithms/Sorting/Comparison/intro_sort.py)
+
+###### Bubble Sort
+
+**Explanation**\
+Repeatedly swap adjacent out-of-order elements; largest elements “bubble” to the end each pass.
+
+- Time: O(n²) average/worst; O(n) best (already sorted with early exit)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function bubble_sort(A):
+    n ← length(A)
+    for i from 0 to n-2:
+        swapped ← false
+        for j from 0 to n-2-i:
+            if A[j] > A[j+1]:
+                swap A[j], A[j+1]
+                swapped ← true
+        if not swapped: break
+```
+
+**Code**
+
+- C++: [`bubble_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/bubble_sort.cpp)
+- Python: [`bubble_sort.py`](Arrays/Algorithms/Sorting/Comparison/bubble_sort.py)
+
+---
+
+###### Selection Sort
+
+**Explanation**\
+Select the minimum in the unsorted suffix and place it at the boundary.
+
+- Time: O(n²)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function selection_sort(A):
+    n ← length(A)
+    for i from 0 to n-2:
+        m ← i
+        for j from i+1 to n-1:
+            if A[j] < A[m]: m ← j
+        swap A[i], A[m]
+```
+
+**Code**
+
+- C++: [`selection_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/selection_sort.cpp)
+- Python: [`selection_sort.py`](Arrays/Algorithms/Sorting/Comparison/selection_sort.py)
+
+---
+
+###### Insertion Sort
+
+**Explanation**\
+Builds the sorted prefix by inserting the next element into position.
+
+- Time: O(n²) average/worst; O(n) best (nearly sorted)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function insertion_sort(A):
+    for i from 1 to length(A)-1:
+        x ← A[i]
+        j ← i-1
+        while j ≥ 0 and A[j] > x:
+            A[j+1] ← A[j]
+            j ← j-1
+        A[j+1] ← x
+```
+
+**Code**
+
+- C++: [`insertion_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/insertion_sort.cpp)
+- Python: [`insertion_sort.py`](Arrays/Algorithms/Sorting/Comparison/insertion_sort.py)
+
+---
+
+###### Shell Sort
+
+**Explanation**\
+Generalizes insertion sort by comparing elements `gap` apart; gap decreases to 1.
+
+- Time: depends on gap; typical \~O(n^(3/2)) to O(n log² n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function shell_sort(A):
+    gaps ← sequence(n)  # e.g., n//2, ... , 1
+    for gap in gaps:
+        for i from gap to n-1:
+            x ← A[i]
+            j ← i
+            while j ≥ gap and A[j-gap] > x:
+                A[j] ← A[j-gap]
+                j ← j-gap
+            A[j] ← x
+```
+
+**Code**
+
+- C++: [`shell_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/shell_sort.cpp)
+- Python: [`shell_sort.py`](Arrays/Algorithms/Sorting/Comparison/shell_sort.py)
+
+---
+
+###### Merge Sort
+
+**Explanation**\
+Divide array into halves, sort each recursively, and merge sorted halves.
+
+- Time: O(n log n)
+- Space: O(n) (auxiliary)
+
+**Pseudo Code**
+
+```text
+function merge_sort(A, l, r):
+    if l ≥ r: return
+    m ← (l + r)//2
+    merge_sort(A, l, m)
+    merge_sort(A, m+1, r)
+    merge(A, l, m, r)
+```
+
+**Code**
+
+- C++: [`merge_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/merge_sort.cpp)
+- Python: [`merge_sort.py`](Arrays/Algorithms/Sorting/Comparison/merge_sort.py)
+
+---
+
+###### Quick Sort
+
+**Explanation**\
+Partition around a pivot so smaller elements go left, larger right; recurse.
+
+- Time: O(n log n) average; O(n²) worst (bad pivots)
+- Space: O(log n) average recursion
+
+**Pseudo Code**
+
+```text
+function quick_sort(A, l, r):
+    if l ≥ r: return
+    p ← partition(A, l, r)  # lomuto/hoare
+    quick_sort(A, l, p-1)
+    quick_sort(A, p+1, r)
+```
+
+**Code**
+
+- C++: [`quick_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/quick_sort.cpp)
+- Python: [`quick_sort.py`](Arrays/Algorithms/Sorting/Comparison/quick_sort.py)
+
+---
+
+###### Heap Sort
+
+**Explanation**\
+Build a max-heap, repeatedly extract max to end.
+
+- Time: O(n log n)
+- Space: O(1) in-place (array heap)
+
+**Pseudo Code**
+
+```text
+function heap_sort(A):
+    build_max_heap(A)
+    for end from n-1 downto 1:
+        swap A[0], A[end]
+        sift_down(A, 0, end)
+```
+
+**Code**
+
+- C++: [`heap_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/heap_sort.cpp)
+- Python: [`heap_sort.py`](Arrays/Algorithms/Sorting/Comparison/heap_sort.py)
+
+---
+
+###### Tim Sort (intro: merge + runs)
+
+**Explanation**\
+Python’s/Java’s hybrid: sort small runs with insertion, then merge runs.
+
+- Time: O(n log n) worst; O(n) on runs
+- Space: O(n)
+
+**Pseudo Code**
+
+```text
+function tim_sort(A):
+    runs ← find_runs(A)
+    for each run: insertion_sort(run)
+    merge_runs_by_size_invariant(runs)
+```
+
+**Code**
+
+- C++: [`tim_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/tim_sort.cpp)
+- Python: [`tim_sort.py`](Arrays/Algorithms/Sorting/Comparison/tim_sort.py)
+
+---
+
+###### Intro Sort (quicksort + heapsort + insert)
+
+**Explanation**\
+Start with quicksort; if depth exceeds limit, switch to heapsort; small partitions via insertion sort.
+
+- Time: O(n log n) worst-bounded
+- Space: O(log n)
+
+**Pseudo Code**
+
+```text
+function introsort(A):
+    maxdepth ← ⌊log₂ n⌋ * 2
+    introsort_util(A, 0, n-1, maxdepth)
+```
+
+**Code**
+
+- C++: [`intro_sort.cpp`](Arrays/Algorithms/Sorting/Comparison/intro_sort.cpp)
+- Python: [`intro_sort.py`](Arrays/Algorithms/Sorting/Comparison/intro_sort.py)
+
+---
 
 ##### Non-Comparison
-- [`counting_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/counting_sort.cpp) · [`counting_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/counting_sort.py)
-- [`radix_sort_lsd.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_lsd.cpp) · [`radix_sort_lsd.py`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_lsd.py)
-- [`radix_sort_msd.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_msd.cpp) · [`radix_sort_msd.py`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_msd.py)
-- [`bucket_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/bucket_sort.cpp) · [`bucket_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/bucket_sort.py)
-- [`pigeonhole_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/pigeonhole_sort.cpp) · [`pigeonhole_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/pigeonhole_sort.py)
-- [`flash_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/flash_sort.cpp) · [`flash_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/flash_sort.py)
-- [`american_flag_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/american_flag_sort.cpp) · [`american_flag_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/american_flag_sort.py)
-- [`postman_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/postman_sort.cpp) · [`postman_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/postman_sort.py)
+
+###### Counting Sort
+
+**Explanation**\
+Count frequency of keys in a small integer range; prefix-sum counts to positions.
+
+- Time: O(n + k)
+- Space: O(n + k)
+
+**Pseudo Code**
+
+```text
+function counting_sort(A, k):
+    C[0..k] ← 0
+    for x in A: C[x] ← C[x] + 1
+    for i from 1..k: C[i] ← C[i] + C[i-1]
+    for x in A (right-to-left):
+        B[C[x]-1] ← x; C[x] ← C[x]-1
+    return B
+```
+
+**Code**
+
+- C++: [`counting_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/counting_sort.cpp)
+- Python: [`counting_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/counting_sort.py)
+
+---
+
+###### Radix Sort (LSD)
+
+**Explanation**\
+Stable sort by least-significant digit upward using counting sort per digit.
+
+- Time: O(d·(n + b)) where `d` digits, base `b`
+- Space: O(n + b)
+
+**Pseudo Code**
+
+```text
+function radix_lsd(A, base):
+    exp ← 1
+    while max(A)/exp ≥ 1:
+        A ← counting_sort_by_digit(A, base, exp)
+        exp ← exp * base
+```
+
+**Code**
+
+- C++: [`radix_sort_lsd.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_lsd.cpp)
+- Python: [`radix_sort_lsd.py`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_lsd.py)
+
+---
+
+###### Radix Sort (MSD)
+
+**Explanation**\
+Sort by most-significant digit first, recursively bucket sublists.
+
+- Time: O(n·d) typical
+- Space: O(n + buckets)
+
+**Pseudo Code**
+
+```text
+function radix_msd(A, base, pos):
+    if pos beyond last digit or |A| ≤ 1: return A
+    buckets ← distribute_by_digit(A, base, pos)
+    for each b in buckets: b ← radix_msd(b, base, pos+1)
+    return concat(buckets in order)
+```
+
+**Code**
+
+- C++: [`radix_sort_msd.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_msd.cpp)
+- Python: [`radix_sort_msd.py`](Arrays/Algorithms/Sorting/Non-Comparison/radix_sort_msd.py)
+
+---
+
+###### Bucket Sort
+
+**Explanation**\
+Map values (usually uniform [0,1)) into buckets, sort each (e.g., insertion), then concatenate.
+
+- Time: O(n) average; O(n²) worst if buckets skew
+- Space: O(n)
+
+**Pseudo Code**
+
+```text
+function bucket_sort(A, num_buckets):
+    buckets ← array of empty lists
+    for x in A: buckets[hash(x)] .append(x)
+    for b in buckets: insertion_sort(b)
+    return concat(buckets)
+```
+
+**Code**
+
+- C++: [`bucket_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/bucket_sort.cpp)
+- Python: [`bucket_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/bucket_sort.py)
+
+---
+
+###### Pigeonhole Sort
+
+**Explanation**\
+Place each key into a “hole” based on value offset; read out holes in order.
+
+- Time: O(n + k)
+- Space: O(k)
+
+**Pseudo Code**
+
+```text
+function pigeonhole_sort(A):
+    mn, mx ← min(A), max(A)
+    k ← mx - mn + 1
+    holes[0..k-1] lists
+    for x in A: holes[x - mn].append(x)
+    return concat(holes in index order)
+```
+
+**Code**
+
+- C++: [`pigeonhole_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/pigeonhole_sort.cpp)
+- Python: [`pigeonhole_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/pigeonhole_sort.py)
+
+---
+
+###### Flash Sort (distribution based)
+
+**Explanation**\
+Classify into classes using linear transformation, permute elements to near-final spots, finish with insertion sort.
+
+- Time: \~O(n) average; O(n²) worst
+- Space: O(k) classes
+
+**Pseudo Code**
+
+```text
+function flash_sort(A):
+    compute classes L[0..m-1] by mapping values
+    permute elements into approximate positions
+    insertion_sort(A)
+```
+
+**Code**
+
+- C++: [`flash_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/flash_sort.cpp)
+- Python: [`flash_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/flash_sort.py)
+
+---
+
+###### American Flag Sort (in-place MSD radix)
+
+**Explanation**\
+In-place MSD radix for integers/strings using counting and region partitioning per digit/byte.
+
+- Time: O(n·d)
+- Space: O(1) extra (in-place bookkeeping)
+
+**Pseudo Code**
+
+```text
+function american_flag(A, digit):
+    if digit beyond end: return
+    count buckets, compute offsets
+    permute in-place so buckets form contiguous regions
+    for each region: american_flag(region, digit+1)
+```
+
+**Code**
+
+- C++: [`american_flag_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/american_flag_sort.cpp)
+- Python: [`american_flag_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/american_flag_sort.py)
+
+---
+
+###### Postman Sort (postal/radix by characters)
+
+**Explanation**\
+Stable LSD-like sorting of strings by character positions.
+
+- Time: O(L·(n + Σ)) for max length L and alphabet Σ
+- Space: O(n + Σ)
+
+**Pseudo Code**
+
+```text
+function postman_sort(S):
+    for pos from last to first:
+        S ← counting_sort_by_char(S, pos)
+```
+
+**Code**
+
+- C++: [`postman_sort.cpp`](Arrays/Algorithms/Sorting/Non-Comparison/postman_sort.cpp)
+- Python: [`postman_sort.py`](Arrays/Algorithms/Sorting/Non-Comparison/postman_sort.py)
+
+---
 
 #### Searching
 
 ##### Unsorted
-- [`linear_search.cpp`](Arrays/Algorithms/Searching/Unsorted/linear_search.cpp) · [`linear_search.py`](Arrays/Algorithms/Searching/Unsorted/linear_search.py)
-- [`sentinel_linear_search.cpp`](Arrays/Algorithms/Searching/Unsorted/sentinel_linear_search.cpp) · [`sentinel_linear_search.py`](Arrays/Algorithms/Searching/Unsorted/sentinel_linear_search.py)
-- [`sublist_subarray_search.cpp`](Arrays/Algorithms/Searching/Unsorted/sublist_subarray_search.cpp) · [`sublist_subarray_search.py`](Arrays/Algorithms/Searching/Unsorted/sublist_subarray_search.py)
-- [`two_poiner_search.cpp`](Arrays/Algorithms/Searching/Unsorted/two_poiner_search.cpp) · [`two_poiner_search.py`](Arrays/Algorithms/Searching/Unsorted/two_poiner_search.py)
-- [`self_organizing_search.cpp`](Arrays/Algorithms/Searching/Unsorted/self_organizing_search.cpp) · [`self_organizing_search.py`](Arrays/Algorithms/Searching/Unsorted/self_organizing_search.py)
+
+###### Linear Search
+
+**Explanation**\
+Scan sequentially until found or exhausted.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function linear_search(A, x):
+    for i from 0..n-1:
+        if A[i] == x: return i
+    return -1
+```
+
+**Code**
+
+- C++: [`linear_search.cpp`](Arrays/Algorithms/Searching/Unsorted/linear_search.cpp)
+- Python: [`linear_search.py`](Arrays/Algorithms/Searching/Unsorted/linear_search.py)
+
+---
+
+###### Sentinel Linear Search
+
+**Explanation**\
+Place target as sentinel at end to avoid bounds checks inside loop.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function sentinel_linear_search(A, x):
+    n ← length(A)
+    last ← A[n-1]; A[n-1] ← x
+    i ← 0
+    while A[i] ≠ x: i ← i+1
+    A[n-1] ← last
+    if i < n-1 or last == x: return i
+    return -1
+```
+
+**Code**
+
+- C++: [`sentinel_linear_search.cpp`](Arrays/Algorithms/Searching/Unsorted/sentinel_linear_search.cpp)
+- Python: [`sentinel_linear_search.py`](Arrays/Algorithms/Searching/Unsorted/sentinel_linear_search.py)
+
+---
+
+###### Sublist/Subarray Search
+
+**Explanation**\
+Find a smaller array `B` inside `A` by checking each start; often optimized with rolling hash (see KMP/Rabin-Karp in String).
+
+- Time: O((n−m+1)·m) naive
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function subarray_search(A, B):
+    for i from 0..n-m:
+        ok ← true
+        for j from 0..m-1:
+            if A[i+j] ≠ B[j]: ok ← false; break
+        if ok: return i
+    return -1
+```
+
+**Code**
+
+- C++: [`sublist_subarray_search.cpp`](Arrays/Algorithms/Searching/Unsorted/sublist_subarray_search.cpp)
+- Python: [`sublist_subarray_search.py`](Arrays/Algorithms/Searching/Unsorted/sublist_subarray_search.py)
+
+---
+
+###### Two-Pointer Search (pair sum example)
+
+**Explanation**\
+Move two indices based on condition to find a relation (e.g., `A[i]+A[j]==k`). For unsorted arrays, typically combine with hashing; as listed here, it’s a pattern demo.
+
+- Time: O(n) per scan (if applicable)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function two_pointer_pair_sum(A, k):
+    sort A   # if allowed
+    i ← 0; j ← n-1
+    while i < j:
+        s ← A[i] + A[j]
+        if s == k: return (i, j)
+        if s < k: i ← i+1 else: j ← j-1
+    return (-1, -1)
+```
+
+**Code**
+
+- C++: [`two_poiner_search.cpp`](Arrays/Algorithms/Searching/Unsorted/two_poiner_search.cpp)
+- Python: [`two_poiner_search.py`](Arrays/Algorithms/Searching/Unsorted/two_poiner_search.py)
+
+---
+
+###### Self-Organizing Search (move-to-front)
+
+**Explanation**\
+On successful search, move found element toward the front to exploit locality.
+
+- Time: Amortized can improve with non-uniform access
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function self_organizing_search(A, x):
+    for i in 0..n-1:
+        if A[i] == x:
+            while i > 0: swap A[i], A[i-1]; i ← i-1
+            return 0  # now at front
+    return -1
+```
+
+**Code**
+
+- C++: [`self_organizing_search.cpp`](Arrays/Algorithms/Searching/Unsorted/self_organizing_search.cpp)
+- Python: [`self_organizing_search.py`](Arrays/Algorithms/Searching/Unsorted/self_organizing_search.py)
+
+---
 
 ##### Sorted
 
 ###### Binary Iterative
-**Explanation**  
-Binary search on a **sorted** array repeatedly halves the search interval. Compare the middle element to the target and discard the half that cannot contain it. Iterative form uses a loop and two pointers `lo` and `hi`.  
-- Time: O(log n) comparisons  
+
+**Explanation**\
+Binary search on a **sorted** array repeatedly halves the search interval. Compare the middle element to the target and discard the half that cannot contain it. Iterative form uses a loop and two pointers `lo` and `hi`.
+
+- Time: O(log n) comparisons
 - Space: O(1) auxiliary
 
 **Pseudo Code**
+
 ```text
 function binary_search_iterative(A, target):
     lo ← 0
@@ -166,16 +719,22 @@ function binary_search_iterative(A, target):
 ```
 
 **Code**
-- C++: [`binary_iterative_search.cpp`](Arrays/Algorithms/Searching/Sorted/binary_iterative_search.cpp)  
+
+- C++: [`binary_iterative_search.cpp`](Arrays/Algorithms/Searching/Sorted/binary_iterative_search.cpp)
 - Python: [`binary_iterative_search.py`](Arrays/Algorithms/Searching/Sorted/binary_iterative_search.py)
 
+---
+
 ###### Binary Recursive
-**Explanation**  
-Same idea as iterative, but implemented via recursion: at each call, recurse into the half that can contain the target until the base case (`lo > hi`) or a match.  
-- Time: O(log n) comparisons  
+
+**Explanation**\
+Same idea as iterative, but implemented via recursion: at each call, recurse into the half that can contain the target until the base case (`lo > hi`) or a match.
+
+- Time: O(log n) comparisons
 - Space: O(log n) due to recursion stack
 
 **Pseudo Code**
+
 ```text
 function binary_search_recursive(A, target, lo, hi):
     if lo > hi:
@@ -190,82 +749,732 @@ function binary_search_recursive(A, target, lo, hi):
 ```
 
 **Code**
-- C++: [`binary_recursive_search.cpp`](Arrays/Algorithms/Searching/Sorted/binary_recursive_search.cpp)  
+
+- C++: [`binary_recursive_search.cpp`](Arrays/Algorithms/Searching/Sorted/binary_recursive_search.cpp)
 - Python: [`binary_recursive_search.py`](Arrays/Algorithms/Searching/Sorted/binary_recursive_search.py)
 
-###### More Sorted Searches
-- [`ternary_search.cpp`](Arrays/Algorithms/Searching/Sorted/ternary_search.cpp) · [`ternary_search.py`](Arrays/Algorithms/Searching/Sorted/ternary_search.py)
-- [`fibonacci_search.cpp`](Arrays/Algorithms/Searching/Sorted/fibonacci_search.cpp) · [`fibonacci_search.py`](Arrays/Algorithms/Searching/Sorted/fibonacci_search.py)
-- [`jump_search.cpp`](Arrays/Algorithms/Searching/Sorted/jump_search.cpp) · [`jump_search.py`](Arrays/Algorithms/Searching/Sorted/jump_search.py)
-- [`exponential_search.cpp`](Arrays/Algorithms/Searching/Sorted/exponential_search.cpp) · [`exponential_search.py`](Arrays/Algorithms/Searching/Sorted/exponential_search.py)
-- [`interpolation_search.cpp`](Arrays/Algorithms/Searching/Sorted/interpolation_search.cpp) · [`interpolation_search.py`](Arrays/Algorithms/Searching/Sorted/interpolation_search.py)
-- [`block_search.cpp`](Arrays/Algorithms/Searching/Sorted/block_search.cpp) · [`block_search.py`](Arrays/Algorithms/Searching/Sorted/block_search.py)
-- [`meta_binary_search.cpp`](Arrays/Algorithms/Searching/Sorted/meta_binary_search.cpp) · [`meta_binary_search.py`](Arrays/Algorithms/Searching/Sorted/meta_binary_search.py)
+---
+
+###### Ternary Search
+
+**Explanation**\
+For unimodal functions/arrays (strictly increasing then decreasing), split range into three parts and keep the one that can contain the optimum.
+
+- Time: O(log₃ n) comparisons
+- Space: O(1) iterative
+
+**Pseudo Code**
+
+```text
+function ternary_search(A, lo, hi):
+    while hi - lo > 2:
+        m1 ← lo + (hi - lo)/3
+        m2 ← hi - (hi - lo)/3
+        if A[m1] < A[m2]: lo ← m1 else: hi ← m2
+    return argmax in [lo..hi]
+```
+
+**Code**
+
+- C++: [`ternary_search.cpp`](Arrays/Algorithms/Searching/Sorted/ternary_search.cpp)
+- Python: [`ternary_search.py`](Arrays/Algorithms/Searching/Sorted/ternary_search.py)
+
+---
+
+###### Fibonacci Search
+
+**Explanation**\
+Use Fibonacci numbers to probe indices, mimicking binary search splits with F(k-1) and F(k-2).
+
+- Time: O(log n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function fibonacci_search(A, x):
+    fibM2 ← 0; fibM1 ← 1; fibM ← fibM1 + fibM2
+    while fibM < n: (update sequence)
+    offset ← -1
+    while fibM > 1:
+        i ← min(offset + fibM2, n-1)
+        if A[i] < x: (shift window right)
+        elif A[i] > x: (shift left)
+        else: return i
+    check last
+    return -1
+```
+
+**Code**
+
+- C++: [`fibonacci_search.cpp`](Arrays/Algorithms/Searching/Sorted/fibonacci_search.cpp)
+- Python: [`fibonacci_search.py`](Arrays/Algorithms/Searching/Sorted/fibonacci_search.py)
+
+---
+
+###### Jump Search
+
+**Explanation**\
+Jump ahead in fixed steps √n, then linear scan within the identified block.
+
+- Time: O(√n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function jump_search(A, x):
+    step ← ⌊√n⌋; prev ← 0
+    while A[min(step,n)-1] < x: prev ← step; step ← step + ⌊√n⌋
+    for i from prev to min(step,n)-1:
+        if A[i] == x: return i
+    return -1
+```
+
+**Code**
+
+- C++: [`jump_search.cpp`](Arrays/Algorithms/Searching/Sorted/jump_search.cpp)
+- Python: [`jump_search.py`](Arrays/Algorithms/Searching/Sorted/jump_search.py)
+
+---
+
+###### Exponential Search
+
+**Explanation**\
+Find range by doubling (1,2,4,8,…) then binary search within that range.
+
+- Time: O(log n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function exponential_search(A, x):
+    if A[0] == x: return 0
+    i ← 1
+    while i < n and A[i] ≤ x: i ← i*2
+    return binary_search(A, x, i/2, min(i, n-1))
+```
+
+**Code**
+
+- C++: [`exponential_search.cpp`](Arrays/Algorithms/Searching/Sorted/exponential_search.cpp)
+- Python: [`exponential_search.py`](Arrays/Algorithms/Searching/Sorted/exponential_search.py)
+
+---
+
+###### Interpolation Search
+
+**Explanation**\
+For uniformly distributed sorted keys, probe with linear interpolation of value.
+
+- Time: O(log log n) average; O(n) worst
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function interpolation_search(A, x):
+    lo ← 0; hi ← n-1
+    while lo ≤ hi and x ≥ A[lo] and x ≤ A[hi]:
+        pos ← lo + (x - A[lo])*(hi - lo)/(A[hi] - A[lo])
+        if A[pos] == x: return pos
+        if A[pos] < x: lo ← pos + 1 else: hi ← pos - 1
+    return -1
+```
+
+**Code**
+
+- C++: [`interpolation_search.cpp`](Arrays/Algorithms/Searching/Sorted/interpolation_search.cpp)
+- Python: [`interpolation_search.py`](Arrays/Algorithms/Searching/Sorted/interpolation_search.py)
+
+---
+
+###### Block Search (indexed/segmented)
+
+**Explanation**\
+Keep an index of blocks (e.g., block max). Search index, then linear scan within block.
+
+- Time: O(b + n/b) with block size b (optimal b≈√n ⇒ O(√n))
+- Space: O(n/b) index
+
+**Pseudo Code**
+
+```text
+function block_search(A, index):
+    block ← find_block(index, target)
+    return linear_search_within_block(A, block)
+```
+
+**Code**
+
+- C++: [`block_search.cpp`](Arrays/Algorithms/Searching/Sorted/block_search.cpp)
+- Python: [`block_search.py`](Arrays/Algorithms/Searching/Sorted/block_search.py)
+
+---
+
+###### Meta Binary Search (bit-by-bit)
+
+**Explanation**\
+Decide each bit of the answer by testing midpoints formed by bit masks (useful for monotonic predicates).
+
+- Time: O(log U) for answer range U
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function meta_binary(low, high, ok):
+    ans ← high
+    while low ≤ high:
+        mid ← (low + high)//2
+        if ok(mid): ans ← mid; high ← mid-1 else: low ← mid+1
+    return ans
+```
+
+**Code**
+
+- C++: [`meta_binary_search.cpp`](Arrays/Algorithms/Searching/Sorted/meta_binary_search.cpp)
+- Python: [`meta_binary_search.py`](Arrays/Algorithms/Searching/Sorted/meta_binary_search.py)
+
+---
 
 #### Sliding Window
 
 ##### Fixed Size
-- [`max_sum_subarray_of_size_k.cpp`](Arrays/Algorithms/Sliding_Window/Fixed_Size/max_sum_subarray_of_size_k.cpp) · [`max_sum_subarray_of_size_k.py`](Arrays/Algorithms/Sliding_Window/Fixed_Size/max_sum_subarray_of_size_k.py)
-- [`average_of_subarrays_of_size_k.cpp`](Arrays/Algorithms/Sliding_Window/Fixed_Size/average_of_subarrays_of_size_k.cpp) · [`average_of_subarrays_of_size_k.py`](Arrays/Algorithms/Sliding_Window/Fixed_Size/average_of_subarrays_of_size_k.py)
+
+###### Max Sum Subarray of Size K
+
+**Explanation**\
+Maintain sum of current window; slide by adding next and removing first.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function max_sum_k(A, k):
+    sum ← first k
+    best ← sum
+    for i from k..n-1:
+        sum ← sum + A[i] - A[i-k]
+        best ← max(best, sum)
+    return best
+```
+
+**Code**
+
+- C++: [`max_sum_subarray_of_size_k.cpp`](Arrays/Algorithms/Sliding_Window/Fixed_Size/max_sum_subarray_of_size_k.cpp)
+- Python: [`max_sum_subarray_of_size_k.py`](Arrays/Algorithms/Sliding_Window/Fixed_Size/max_sum_subarray_of_size_k.py)
+
+---
+
+###### Average of Subarrays of Size K
+
+**Explanation**\
+Same as above, divide each window sum by k.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function averages_k(A, k):
+    sum ← first k
+    out ← [sum/k]
+    for i from k..n-1:
+        sum ← sum + A[i] - A[i-k]
+        append(out, sum/k)
+    return out
+```
+
+**Code**
+
+- C++: [`average_of_subarrays_of_size_k.cpp`](Arrays/Algorithms/Sliding_Window/Fixed_Size/average_of_subarrays_of_size_k.cpp)
+- Python: [`average_of_subarrays_of_size_k.py`](Arrays/Algorithms/Sliding_Window/Fixed_Size/average_of_subarrays_of_size_k.py)
+
+---
 
 ##### Variable Size
-- [`longest_subarray_sum_at_most_k.cpp`](Arrays/Algorithms/Sliding_Window/Variable_Size/longest_subarray_sum_at_most_k.cpp) · [`longest_subarray_sum_at_most_k.py`](Arrays/Algorithms/Sliding_Window/Variable_Size/longest_subarray_sum_at_most_k.py)
-- [`smallest_subarray_with_sum_greater_than_k.cpp`](Arrays/Algorithms/Sliding_Window/Variable_Size/smallest_subarray_with_sum_greater_than_k.cpp) · [`smallest_subarray_with_sum_greater_than_k.py`](Arrays/Algorithms/Sliding_Window/Variable_Size/smallest_subarray_with_sum_greater_than_k.py)
+
+###### Longest Subarray Sum ≤ K
+
+**Explanation**\
+Expand right; while sum > K, shrink left; track max length.
+
+- Time: O(n) for non-negative arrays
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function longest_at_most_k(A, K):
+    l ← 0; sum ← 0; best ← 0
+    for r in 0..n-1:
+        sum += A[r]
+        while sum > K: sum -= A[l]; l += 1
+        best ← max(best, r-l+1)
+    return best
+```
+
+**Code**
+
+- C++: [`longest_subarray_sum_at_most_k.cpp`](Arrays/Algorithms/Sliding_Window/Variable_Size/longest_subarray_sum_at_most_k.cpp)
+- Python: [`longest_subarray_sum_at_most_k.py`](Arrays/Algorithms/Sliding_Window/Variable_Size/longest_subarray_sum_at_most_k.py)
+
+---
+
+###### Smallest Subarray with Sum > K
+
+**Explanation**\
+Expand right; shrink left while sum > K; track min length.
+
+- Time: O(n) (positive numbers)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function smallest_gt_k(A, K):
+    l ← 0; sum ← 0; best ← ∞
+    for r in 0..n-1:
+        sum += A[r]
+        while sum > K:
+            best ← min(best, r-l+1)
+            sum -= A[l]; l += 1
+    return best if best ≠ ∞ else 0
+```
+
+**Code**
+
+- C++: [`smallest_subarray_with_sum_greater_than_k.cpp`](Arrays/Algorithms/Sliding_Window/Variable_Size/smallest_subarray_with_sum_greater_than_k.cpp)
+- Python: [`smallest_subarray_with_sum_greater_than_k.py`](Arrays/Algorithms/Sliding_Window/Variable_Size/smallest_subarray_with_sum_greater_than_k.py)
+
+---
 
 ##### Two Pointer
-- [`longest_substring_k_distinct.cpp`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_k_distinct.cpp) · [`longest_substring_k_distinct.py`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_k_distinct.py)
-- [`longest_substring_without_repeating_chars.cpp`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_without_repeating_chars.cpp) · [`longest_substring_without_repeating_chars.py`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_without_repeating_chars.py)
+
+###### Longest Substring with K Distinct
+
+**Explanation**\
+Expand right, count chars; if distinct > K, move left while decreasing counts.
+
+- Time: O(n)
+- Space: O(Σ)
+
+**Pseudo Code**
+
+```text
+function longest_k_distinct(s, K):
+    l ← 0; best ← 0; cnt ← map()
+    for r in 0..n-1:
+        cnt[s[r]]++
+        while |cnt| > K: cnt[s[l]]--; if cnt[s[l]]==0: erase; l++
+        best ← max(best, r-l+1)
+    return best
+```
+
+**Code**
+
+- C++: [`longest_substring_k_distinct.cpp`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_k_distinct.cpp)
+- Python: [`longest_substring_k_distinct.py`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_k_distinct.py)
+
+---
+
+###### Longest Substring Without Repeating Characters
+
+**Explanation**\
+Track last index of each char; move `l` past duplicates.
+
+- Time: O(n)
+- Space: O(Σ)
+
+**Pseudo Code**
+
+```text
+function longest_unique(s):
+    last ← map(); l ← 0; best ← 0
+    for r in 0..n-1:
+        if s[r] in last and last[s[r]] ≥ l: l ← last[s[r]] + 1
+        last[s[r]] ← r
+        best ← max(best, r-l+1)
+    return best
+```
+
+**Code**
+
+- C++: [`longest_substring_without_repeating_chars.cpp`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_without_repeating_chars.cpp)
+- Python: [`longest_substring_without_repeating_chars.py`](Arrays/Algorithms/Sliding_Window/Two_Pointer/longest_substring_without_repeating_chars.py)
+
+---
 
 ##### Deque Based
-- [`sliding_window_maximum.cpp`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_maximum.cpp) · [`sliding_window_maximum.py`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_maximum.py)
-- [`sliding_window_minimum.cpp`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_minimum.cpp) · [`sliding_window_minimum.py`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_minimum.py)
+
+###### Sliding Window Maximum
+
+**Explanation**\
+Maintain deque of indices with decreasing values; front is max.
+
+- Time: O(n)
+- Space: O(k)
+
+**Pseudo Code**
+
+```text
+function max_sliding_window(A, k):
+    dq ← empty
+    for i in 0..n-1:
+        while dq not empty and dq.front() ≤ i-k: pop_front
+        while dq not empty and A[dq.back()] ≤ A[i]: pop_back
+        push_back(i)
+        if i ≥ k-1: output A[dq.front()]
+```
+
+**Code**
+
+- C++: [`sliding_window_maximum.cpp`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_maximum.cpp)
+- Python: [`sliding_window_maximum.py`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_maximum.py)
+
+---
+
+###### Sliding Window Minimum
+
+**Explanation**\
+Same as maximum, but maintain increasing deque.
+
+- Time: O(n)
+- Space: O(k)
+
+**Pseudo Code**
+
+```text
+function min_sliding_window(A, k):
+    dq ← empty
+    for i in 0..n-1:
+        while dq not empty and dq.front() ≤ i-k: pop_front
+        while dq not empty and A[dq.back()] ≥ A[i]: pop_back
+        push_back(i)
+        if i ≥ k-1: output A[dq.front()]
+```
+
+**Code**
+
+- C++: [`sliding_window_minimum.cpp`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_minimum.cpp)
+- Python: [`sliding_window_minimum.py`](Arrays/Algorithms/Sliding_Window/Deque_Based/sliding_window_minimum.py)
+
+---
 
 ##### Frequency Based
-- [`find_all_anagrams_in_string.cpp`](Arrays/Algorithms/Sliding_Window/Frequency_Based/find_all_anagrams_in_string.cpp) · [`find_all_anagrams_in_string.py`](Arrays/Algorithms/Sliding_Window/Frequency_Based/find_all_anagrams_in_string.py)
-- [`count_substrings_with_constraints.cpp`](Arrays/Algorithms/Sliding_Window/Frequency_Based/count_substrings_with_constraints.cpp) · [`count_substrings_with_constraints.py`](Arrays/Algorithms/Sliding_Window/Frequency_Based/count_substrings_with_constraints.py)
+
+###### Find All Anagrams in String
+
+**Explanation**\
+Count chars in window and compare to target counts.
+
+- Time: O(n)
+- Space: O(Σ)
+
+**Pseudo Code**
+
+```text
+function find_anagrams(s, p):
+    need ← count(p); have ← zeros
+    l ← 0; out ← []
+    for r in 0..n-1:
+        have[s[r]]++
+        while r-l+1 > |p|: have[s[l]]--; l++
+        if have == need: out.append(l)
+    return out
+```
+
+**Code**
+
+- C++: [`find_all_anagrams_in_string.cpp`](Arrays/Algorithms/Sliding_Window/Frequency_Based/find_all_anagrams_in_string.cpp)
+- Python: [`find_all_anagrams_in_string.py`](Arrays/Algorithms/Sliding_Window/Frequency_Based/find_all_anagrams_in_string.py)
+
+---
+
+###### Count Substrings with Constraints
+
+**Explanation**\
+Generic pattern: maintain frequency/state invariant, slide pointers accordingly, count windows.
+
+- Time: O(n) typical
+- Space: O(Σ)
+
+**Pseudo Code**
+
+```text
+function count_with_constraint(s, ok):
+    l ← 0; ans ← 0; state ← new
+    for r in 0..n-1:
+        state.add(s[r])
+        while not ok(state):
+            state.remove(s[l]); l++
+        ans += r - l + 1
+    return ans
+```
+
+**Code**
+
+- C++: [`count_substrings_with_constraints.cpp`](Arrays/Algorithms/Sliding_Window/Frequency_Based/count_substrings_with_constraints.cpp)
+- Python: [`count_substrings_with_constraints.py`](Arrays/Algorithms/Sliding_Window/Frequency_Based/count_substrings_with_constraints.py)
+
+---
 
 ##### Circular
-- [`max_sum_circular_subarray.cpp`](Arrays/Algorithms/Sliding_Window/Circular/max_sum_circular_subarray.cpp) · [`max_sum_circular_subarray.py`](Arrays/Algorithms/Sliding_Window/Circular/max_sum_circular_subarray.py)
-- [`circular_window_rotation.cpp`](Arrays/Algorithms/Sliding_Window/Circular/circular_window_rotation.cpp) · [`circular_window_rotation.py`](Arrays/Algorithms/Sliding_Window/Circular/circular_window_rotation.py)
+
+###### Max Sum Circular Subarray
+
+**Explanation**\
+Use Kadane for non-wrapped max and for wrapped max = totalSum − minSubarray.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function max_circular(A):
+    best_normal ← kadane(A)
+    best_wrap ← sum(A) - kadane_min(A)
+    if best_wrap == 0: return best_normal  # all negative
+    return max(best_normal, best_wrap)
+```
+
+**Code**
+
+- C++: [`max_sum_circular_subarray.cpp`](Arrays/Algorithms/Sliding_Window/Circular/max_sum_circular_subarray.cpp)
+- Python: [`max_sum_circular_subarray.py`](Arrays/Algorithms/Sliding_Window/Circular/max_sum_circular_subarray.py)
+
+---
+
+###### Circular Window Rotation
+
+**Explanation**\
+Treat array indices modulo n; sliding techniques with wrap-around.
+
+- Time: O(n) typical
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function circular_windows(A, k):
+    for start in 0..n-1:
+        window ← [A[(start+i) mod n] for i in 0..k-1]
+        process(window)
+```
+
+**Code**
+
+- C++: [`circular_window_rotation.cpp`](Arrays/Algorithms/Sliding_Window/Circular/circular_window_rotation.cpp)
+- Python: [`circular_window_rotation.py`](Arrays/Algorithms/Sliding_Window/Circular/circular_window_rotation.py)
+
+---
 
 #### Prefix Sum
-- [`prefix_sum_array.cpp`](Arrays/Algorithms/Prefix_Sum/prefix_sum_array.cpp) · [`prefix_sum_array.py`](Arrays/Algorithms/Prefix_Sum/prefix_sum_array.py)
-- [`difference_array.cpp`](Arrays/Algorithms/Prefix_Sum/difference_array.cpp) · [`difference_array.py`](Arrays/Algorithms/Prefix_Sum/difference_array.py)
+
+###### Prefix Sum Array
+
+**Explanation**\
+Prefix[i] = sum of first i elements; range sum in O(1).
+
+- Time: O(n) build, O(1) query
+- Space: O(n)
+
+**Pseudo Code**
+
+```text
+function build_prefix(A):
+    P[0] ← 0
+    for i in 1..n: P[i] ← P[i-1] + A[i-1]
+    return P
+```
+
+**Code**
+
+- C++: [`prefix_sum_array.cpp`](Arrays/Algorithms/Prefix_Sum/prefix_sum_array.cpp)
+- Python: [`prefix_sum_array.py`](Arrays/Algorithms/Prefix_Sum/prefix_sum_array.py)
+
+---
+
+###### Difference Array
+
+**Explanation**\
+Update range [l,r] by `+v` via D[l]+=v, D[r+1]-=v; reconstruct by prefixing D.
+
+- Time: O(1) per range update, O(n) rebuild
+- Space: O(n)
+
+**Pseudo Code**
+
+```text
+function range_add(D, l, r, v):
+    D[l] += v
+    if r+1 < length(D): D[r+1] -= v
+```
+
+**Code**
+
+- C++: [`difference_array.cpp`](Arrays/Algorithms/Prefix_Sum/difference_array.cpp)
+- Python: [`difference_array.py`](Arrays/Algorithms/Prefix_Sum/difference_array.py)
+
+---
 
 #### Kadane Algorithm
-- [`max_sum_subarray.cpp`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray.cpp) · [`max_sum_subarray.py`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray.py)
-- [`max_sum_subarray_circular.cpp`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray_circular.cpp) · [`max_sum_subarray_circular.py`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray_circular.py)
+
+###### Maximum Subarray Sum
+
+**Explanation**\
+Best ending at i is max(A[i], bestEnding+i-1 + A[i]). Track global best.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function kadane(A):
+    best ← -∞; cur ← 0
+    for x in A:
+        cur ← max(x, cur + x)
+        best ← max(best, cur)
+    return best
+```
+
+**Code**
+
+- C++: [`max_sum_subarray.cpp`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray.cpp)
+- Python: [`max_sum_subarray.py`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray.py)
+
+---
+
+###### Maximum Subarray Sum (Circular)
+
+**Explanation**\
+See Circular section above; compute both non-wrap and wrap cases.
+
+- Time: O(n)
+- Space: O(1)
+
+**Code**
+
+- C++: [`max_sum_subarray_circular.cpp`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray_circular.cpp)
+- Python: [`max_sum_subarray_circular.py`](Arrays/Algorithms/Kadane_Algorithm/max_sum_subarray_circular.py)
+
+---
 
 #### Rotation
-- [`array_rotation_left.cpp`](Arrays/Algorithms/Rotation/array_rotation_left.cpp) · [`array_rotation_left.py`](Arrays/Algorithms/Rotation/array_rotation_left.py)
-- [`array_rotation_right.cpp`](Arrays/Algorithms/Rotation/array_rotation_right.cpp) · [`array_rotation_right.py`](Arrays/Algorithms/Rotation/array_rotation_right.py)
+
+###### Array Rotation Left/Right
+
+**Explanation**\
+Use reversal algorithm: reverse parts then whole; or juggling with gcd.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function rotate_left(A, k):
+    k ← k mod n
+    reverse(A, 0, k-1); reverse(A, k, n-1); reverse(A, 0, n-1)
+```
+
+**Code**
+
+- C++: [`array_rotation_left.cpp`](Arrays/Algorithms/Rotation/array_rotation_left.cpp) · [`array_rotation_right.cpp`](Arrays/Algorithms/Rotation/array_rotation_right.cpp)
+- Python: [`array_rotation_left.py`](Arrays/Algorithms/Rotation/array_rotation_left.py) · [`array_rotation_right.py`](Arrays/Algorithms/Rotation/array_rotation_right.py)
+
+---
 
 #### Rearrangement
-- [`rearrange_pos_neg.cpp`](Arrays/Algorithms/Rearrangement/rearrange_pos_neg.cpp) · [`rearrange_pos_neg.py`](Arrays/Algorithms/Rearrangement/rearrange_pos_neg.py)
-- [`partition_array.cpp`](Arrays/Algorithms/Rearrangement/partition_array.cpp) · [`partition_array.py`](Arrays/Algorithms/Rearrangement/partition_array.py)
+
+###### Rearrange Positives & Negatives (alternating)
+
+**Explanation**\
+Partition by sign then interleave; or in-place using two-pointer swapping.
+
+- Time: O(n)
+- Space: O(1) in-place
+
+**Code**
+
+- C++: [`rearrange_pos_neg.cpp`](Arrays/Algorithms/Rearrangement/rearrange_pos_neg.cpp)
+- Python: [`rearrange_pos_neg.py`](Arrays/Algorithms/Rearrangement/rearrange_pos_neg.py)
+
+---
+
+###### Partition Array (Dutch pivoting)
+
+**Explanation**\
+Partition relative to pivot (Lomuto/Hoare) or three-way partition for duplicates.
+
+- Time: O(n)
+- Space: O(1)
+
+**Code**
+
+- C++: [`partition_array.cpp`](Arrays/Algorithms/Rearrangement/partition_array.cpp)
+- Python: [`partition_array.py`](Arrays/Algorithms/Rearrangement/partition_array.py)
+
+---
 
 #### Miscellaneous
-- [`dutch_national_flag.cpp`](Arrays/Algorithms/Miscellaneous/dutch_national_flag.cpp) · [`dutch_national_flag.py`](Arrays/Algorithms/Miscellaneous/dutch_national_flag.py)
-- [`majority_element.cpp`](Arrays/Algorithms/Miscellaneous/majority_element.cpp) · [`majority_element.py`](Arrays/Algorithms/Miscellaneous/majority_element.py)
 
-### Array: Derived Structures
+###### Dutch National Flag
 
-#### Stack
-- **C++**: [`stack_c_styled_array.cpp`](Arrays/Derived_Structures/Stack/Implementation/C%2B%2B/stack_c_styled_array.cpp) · [`stack.cpp`](Arrays/Derived_Structures/Stack/Implementation/C%2B%2B/stack.cpp) · [`peek.cpp`](Arrays/Derived_Structures/Stack/Implementation/C%2B%2B/peek.cpp)
-- **Python**: [`stack_array_list.py`](Arrays/Derived_Structures/Stack/Implementation/Python/stack_array_list.py) · [`stack_array_module.py`](Arrays/Derived_Structures/Stack/Implementation/Python/stack_array_module.py) · [`stack_array_numpy.py`](Arrays/Derived_Structures/Stack/Implementation/Python/stack_array_numpy.py)
+**Explanation**\
+Three-way partition into {0,1,2} using `low, mid, high` pointers.
 
-#### Queue
-- **C++**: [`queue_array.cpp`](Arrays/Derived_Structures/Queue/Implementation/C%2B%2B/queue_array.cpp) · [`circular_queue_array.cpp`](Arrays/Derived_Structures/Queue/Implementation/C%2B%2B/circular_queue_array.cpp) · [`priority_queue_array.cpp`](Arrays/Derived_Structures/Queue/Implementation/C%2B%2B/priority_queue_array.cpp)
-- **Python**: [`queue_array_list.py`](Arrays/Derived_Structures/Queue/Implementation/Python/queue_array_list.py) · [`circular_queue_array.py`](Arrays/Derived_Structures/Queue/Implementation/Python/circular_queue_array.py) · [`priority_queue_array.py`](Arrays/Derived_Structures/Queue/Implementation/Python/priority_queue_array.py)
+- Time: O(n)
+- Space: O(1)
 
-#### Deque
-- **C++**: [`deque_array.cpp`](Arrays/Derived_Structures/Deque/Implementation/C%2B%2B/deque_array.cpp) · [`circular_deque_array.cpp`](Arrays/Derived_Structures/Deque/Implementation/C%2B%2B/circular_deque_array.cpp)  
-- **Python**: [`deque_array_list.py`](Arrays/Derived_Structures/Deque/Implementation/Python/deque_array_list.py) · [`circular_deque_array.py`](Arrays/Derived_Structures/Deque/Implementation/Python/circular_deque_array.py)
+**Pseudo Code**
 
-#### Heap Array
-- **C++**: [`binary_heap_array.cpp`](Arrays/Derived_Structures/Heap_Array/Implementation/C%2B%2B/binary_heap_array.cpp) · [`min_heap_array.cpp`](Arrays/Derived_Structures/Heap_Array/Implementation/C%2B%2B/min_heap_array.cpp) · [`max_heap_array.cpp`](Arrays/Derived_Structures/Heap_Array/Implementation/C%2B%2B/max_heap_array.cpp)
-- **Python**: [`binary_heap_array.py`](Arrays/Derived_Structures/Heap_Array/Implementation/Python/binary_heap_array.py) · [`min_heap_array.py`](Arrays/Derived_Structures/Heap_Array/Implementation/Python/min_heap_array.py) · [`max_heap_array.py`](Arrays/Derived_Structures/Heap_Array/Implementation/Python/max_heap_array.py)
+```text
+function dnf(A):
+    low ← 0; mid ← 0; high ← n-1
+    while mid ≤ high:
+        match A[mid] with 0→swap(A[low++],A[mid++]); 1→mid++; 2→swap(A[mid],A[high--])
+```
 
+**Code**
+
+- C++: [`dutch_national_flag.cpp`](Arrays/Algorithms/Miscellaneous/dutch_national_flag.cpp)
+- Python: [`dutch_national_flag.py`](Arrays/Algorithms/Miscellaneous/dutch_national_flag.py)
+
+---
+
+###### Majority Element (Boyer–Moore)
+
+**Explanation**\
+Maintain candidate and count; cancel pairs of different elements.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+
+```text
+function majority(A):
+    cand ← ⊥; cnt ← 0
+    for x in A:
+        if cnt == 0: cand ← x
+        cnt ← cnt + (1 if x == cand else -1)
+    return cand  # verify if needed
+```
+
+**Code**
+
+- C++: [`majority_element.cpp`](Arrays/Algorithms/Miscellaneous/majority_element.cpp)
+- Python: [`majority_element.py`](Arrays/Algorithms/Miscellaneous/majority_element.py)
+
+---
 ---
 
 ## Matrix
