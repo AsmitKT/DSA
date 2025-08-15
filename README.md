@@ -1988,39 +1988,746 @@ Nodes are the atomic building blocks of linked structures (lists, trees, graphs)
 ### Nodes: Derived Structures
 
 #### Linked List
-- [`singly_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/singly_linked_list.cpp) · [`singly_linked_list.py`](Nodes/Derived_Structures/Linked_List/singly_linked_list.py)
-- [`doubly_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/doubly_linked_list.cpp) · [`doubly_linked_list.py`](Nodes/Derived_Structures/Linked_List/doubly_linked_list.py)
-- [`circular_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/circular_linked_list.cpp) · [`circular_linked_list.py`](Nodes/Derived_Structures/Linked_List/circular_linked_list.py)
-- [`reverse_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/reverse_linked_list.cpp) · [`reverse_linked_list.py`](Nodes/Derived_Structures/Linked_List/reverse_linked_list.py)
-- [`merge_linked_lists.cpp`](Nodes/Derived_Structures/Linked_List/merge_linked_lists.cpp) · [`merge_linked_lists.py`](Nodes/Derived_Structures/Linked_List/merge_linked_lists.py)
-- [`cycle_detection.cpp`](Nodes/Derived_Structures/Linked_List/cycle_detection.cpp) · [`cycle_detection.py`](Nodes/Derived_Structures/Linked_List/cycle_detection.py)
-- [`remove_nth_node.cpp`](Nodes/Derived_Structures/Linked_List/remove_nth_node.cpp) · [`remove_nth_node.py`](Nodes/Derived_Structures/Linked_List/remove_nth_node.py)
-- [`split_merge_lists.cpp`](Nodes/Derived_Structures/Linked_List/split_merge_lists.cpp) · [`split_merge_lists.py`](Nodes/Derived_Structures/Linked_List/split_merge_lists.py)
+
+###### Singly Linked List (SLL)
+
+**Explanation**\
+Each node has `value` and `next`. Typical ops: push/pop at head, search, delete by key, traverse.
+
+- Time: O(1) push/pop at head, O(n) search/delete
+- Space: O(n)
+
+**Pseudo Code**
+```text
+class Node:
+    val, next
+
+function push_front(head, x):
+    node ← Node(x)
+    node.next ← head
+    return node  # new head
+
+function traverse(head):
+    cur ← head
+    while cur ≠ null:
+        visit(cur.val)
+        cur ← cur.next
+```
+
+**Code**  
+- C++: [`singly_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/singly_linked_list.cpp)  
+- Python: [`singly_linked_list.py`](Nodes/Derived_Structures/Linked_List/singly_linked_list.py)
+
+---
+
+###### Doubly Linked List (DLL)
+
+**Explanation**\
+Nodes carry `prev` and `next`. Enables O(1) delete given a node, and bidirectional traversal.
+
+- Time: O(1) insert/delete at ends (with head/tail), O(n) search
+- Space: O(n)
+
+**Pseudo Code**
+```text
+class DNode:
+    val, prev, next
+
+function insert_after(node, x):
+    n ← DNode(x)
+    n.prev ← node
+    n.next ← node.next
+    if node.next ≠ null: node.next.prev ← n
+    node.next ← n
+```
+
+**Code**  
+- C++: [`doubly_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/doubly_linked_list.cpp)  
+- Python: [`doubly_linked_list.py`](Nodes/Derived_Structures/Linked_List/doubly_linked_list.py)
+
+---
+
+###### Circular Linked List (CLL)
+
+**Explanation**\
+Tail’s `next` points back to head (and `prev` to tail in CDLL). Useful for round-robin.
+
+- Time: O(1) insert at head/tail if tail/head kept
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function insert_tail_circular(head, x):
+    n ← Node(x)
+    if head == null:
+        n.next ← n
+        return n
+    tail ← head
+    while tail.next ≠ head: tail ← tail.next
+    tail.next ← n
+    n.next ← head
+    return head
+```
+
+**Code**  
+- C++: [`circular_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/circular_linked_list.cpp)  
+- Python: [`circular_linked_list.py`](Nodes/Derived_Structures/Linked_List/circular_linked_list.py)
+
+---
+
+###### Reverse Linked List
+
+**Explanation**\
+Iteratively flip `next` pointers.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function reverse(head):
+    prev ← null; cur ← head
+    while cur ≠ null:
+        nxt ← cur.next
+        cur.next ← prev
+        prev ← cur; cur ← nxt
+    return prev
+```
+
+**Code**  
+- C++: [`reverse_linked_list.cpp`](Nodes/Derived_Structures/Linked_List/reverse_linked_list.cpp)  
+- Python: [`reverse_linked_list.py`](Nodes/Derived_Structures/Linked_List/reverse_linked_list.py)
+
+---
+
+###### Merge Two Sorted Lists
+
+**Explanation**\
+Classic two-pointer merge producing a single sorted list.
+
+- Time: O(n+m)
+- Space: O(1) extra (iterative)
+
+**Pseudo Code**
+```text
+function merge_sorted(a, b):
+    dummy ← Node(⊥); tail ← dummy
+    while a and b:
+        if a.val ≤ b.val: tail.next ← a; a ← a.next
+        else: tail.next ← b; b ← b.next
+        tail ← tail.next
+    tail.next ← a if a else b
+    return dummy.next
+```
+
+**Code**  
+- C++: [`merge_linked_lists.cpp`](Nodes/Derived_Structures/Linked_List/merge_linked_lists.cpp)  
+- Python: [`merge_linked_lists.py`](Nodes/Derived_Structures/Linked_List/merge_linked_lists.py)
+
+---
+
+###### Cycle Detection (Floyd’s)
+
+**Explanation**\
+Tortoise–hare pointers; if they meet, a cycle exists. Entry found by resetting one pointer to head and moving both one step.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function has_cycle(head):
+    slow ← head; fast ← head
+    while fast and fast.next:
+        slow ← slow.next
+        fast ← fast.next.next
+        if slow == fast: return true
+    return false
+```
+
+**Code**  
+- C++: [`cycle_detection.cpp`](Nodes/Derived_Structures/Linked_List/cycle_detection.cpp)  
+- Python: [`cycle_detection.py`](Nodes/Derived_Structures/Linked_List/cycle_detection.py)
+
+---
+
+###### Remove N-th Node from End
+
+**Explanation**\
+Advance `fast` by `n`, then move `slow` and `fast` together; delete `slow.next`.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function remove_nth_from_end(head, n):
+    dummy ← Node(0); dummy.next ← head
+    slow ← dummy; fast ← dummy
+    for i in 1..n: fast ← fast.next
+    while fast.next:
+        slow ← slow.next; fast ← fast.next
+    slow.next ← slow.next.next
+    return dummy.next
+```
+
+**Code**  
+- C++: [`remove_nth_node.cpp`](Nodes/Derived_Structures/Linked_List/remove_nth_node.cpp)  
+- Python: [`remove_nth_node.py`](Nodes/Derived_Structures/Linked_List/remove_nth_node.py)
+
+---
+
+###### Split & Merge Lists (utilities)
+
+**Explanation**\
+Split by position (front/back halves) or parity, then merge by interleaving or order.
+
+- Time: O(n)
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function split_half(head):
+    slow ← head; fast ← head; prev ← null
+    while fast and fast.next:
+        prev ← slow; slow ← slow.next; fast ← fast.next.next
+    prev.next ← null
+    return (head, slow)
+```
+
+**Code**  
+- C++: [`split_merge_lists.cpp`](Nodes/Derived_Structures/Linked_List/split_merge_lists.cpp)  
+- Python: [`split_merge_lists.py`](Nodes/Derived_Structures/Linked_List/split_merge_lists.py)
+
+---
 
 #### Tree
-- [`binary_tree.cpp`](Nodes/Derived_Structures/Tree/binary_tree.cpp) · [`binary_tree.py`](Nodes/Derived_Structures/Tree/binary_tree.py)
-- [`binary_search_tree.cpp`](Nodes/Derived_Structures/Tree/binary_search_tree.cpp) · [`binary_search_tree.py`](Nodes/Derived_Structures/Tree/binary_search_tree.py)
-- [`avl_tree.cpp`](Nodes/Derived_Structures/Tree/avl_tree.cpp) · [`avl_tree.py`](Nodes/Derived_Structures/Tree/avl_tree.py)
-- [`red_black_tree.cpp`](Nodes/Derived_Structures/Tree/red_black_tree.cpp) · [`red_black_tree.py`](Nodes/Derived_Structures/Tree/red_black_tree.py)
-- [`segment_tree.cpp`](Nodes/Derived_Structures/Tree/segment_tree.cpp) · [`segment_tree.py`](Nodes/Derived_Structures/Tree/segment_tree.py)
-- [`fenwick_tree.cpp`](Nodes/Derived_Structures/Tree/fenwick_tree.cpp) · [`fenwick_tree.py`](Nodes/Derived_Structures/Tree/fenwick_tree.py)
-- [`trie.cpp`](Nodes/Derived_Structures/Tree/trie.cpp) · [`trie.py`](Nodes/Derived_Structures/Tree/trie.py)
-- [`suffix_tree.cpp`](Nodes/Derived_Structures/Tree/suffix_tree.cpp) · [`suffix_tree.py`](Nodes/Derived_Structures/Tree/suffix_tree.py)
-- [`heap_tree.cpp`](Nodes/Derived_Structures/Tree/heap_tree.cpp) · [`heap_tree.py`](Nodes/Derived_Structures/Tree/heap_tree.py)
+
+###### Binary Tree (traversals)
+
+**Explanation**\
+Generic node with left/right. DFS traversals (pre/in/post) and BFS (level order).
+
+- Time: O(n)
+- Space: O(h) recursion or O(n) queue
+
+**Pseudo Code**
+```text
+class TNode:
+    val, left, right
+
+function inorder(u):
+    if u == null: return
+    inorder(u.left); visit(u.val); inorder(u.right)
+```
+
+**Code**  
+- C++: [`binary_tree.cpp`](Nodes/Derived_Structures/Tree/binary_tree.cpp)  
+- Python: [`binary_tree.py`](Nodes/Derived_Structures/Tree/binary_tree.py)
+
+---
+
+###### Binary Search Tree (BST)
+
+**Explanation**\
+Left subtree < node < right subtree. Supports ordered operations.
+
+- Time: O(h) per op (O(log n) avg; O(n) worst)
+- Space: O(h)
+
+**Pseudo Code**
+```text
+function bst_insert(root, x):
+    if root == null: return new Node(x)
+    if x < root.val: root.left ← bst_insert(root.left, x)
+    elif x > root.val: root.right ← bst_insert(root.right, x)
+    return root
+```
+
+**Code**  
+- C++: [`binary_search_tree.cpp`](Nodes/Derived_Structures/Tree/binary_search_tree.cpp)  
+- Python: [`binary_search_tree.py`](Nodes/Derived_Structures/Tree/binary_search_tree.py)
+
+---
+
+###### AVL Tree (self-balancing BST)
+
+**Explanation**\
+Maintain height balance |bf|≤1 with rotations after insert/delete.
+
+- Time: O(log n) per op
+- Space: O(log n)
+
+**Pseudo Code**
+```text
+function rebalance(u):
+    update_height(u)
+    if balance(u) == 2:
+        if balance(u.right) < 0: u.right ← rotate_right(u.right)
+        return rotate_left(u)
+    if balance(u) == -2:
+        if balance(u.left) > 0: u.left ← rotate_left(u.left)
+        return rotate_right(u)
+    return u
+```
+
+**Code**  
+- C++: [`avl_tree.cpp`](Nodes/Derived_Structures/Tree/avl_tree.cpp)  
+- Python: [`avl_tree.py`](Nodes/Derived_Structures/Tree/avl_tree.py)
+
+---
+
+###### Red–Black Tree
+
+**Explanation**\
+Balanced BST with node colors and invariants to guarantee O(log n). Fix-ups via recolor/rotate.
+
+- Time: O(log n) per op
+- Space: O(log n)
+
+**Pseudo Code**
+```text
+# Sketch of insert fix-up (cases omitted for brevity)
+function rb_insert_fixup(T, z):
+    while color(parent(z)) == RED:
+        if parent(z) is left child:
+            # mirror-symmetric cases with uncle
+            ...
+        else:
+            ...
+    color(root(T)) ← BLACK
+```
+
+**Code**  
+- C++: [`red_black_tree.cpp`](Nodes/Derived_Structures/Tree/red_black_tree.cpp)  
+- Python: [`red_black_tree.py`](Nodes/Derived_Structures/Tree/red_black_tree.py)
+
+---
+
+###### Segment Tree (range queries)
+
+**Explanation**\
+Tree over array intervals enabling range queries/updates.
+
+- Time: O(n) build; O(log n) query/update
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function build(idx, l, r):
+    if l == r: seg[idx] ← A[l]; return
+    m ← (l+r)//2
+    build(2idx,l,m); build(2idx+1,m+1,r)
+    seg[idx] ← seg[2idx] ⊕ seg[2idx+1]
+
+function query(idx,l,r,ql,qr):
+    if qr<l or r<ql: return NEUTRAL
+    if ql≤l and r≤qr: return seg[idx]
+    m ← (l+r)//2
+    return query(2idx,l,m,ql,qr) ⊕ query(2idx+1,m+1,r,ql,qr)
+```
+
+**Code**  
+- C++: [`segment_tree.cpp`](Nodes/Derived_Structures/Tree/segment_tree.cpp)  
+- Python: [`segment_tree.py`](Nodes/Derived_Structures/Tree/segment_tree.py)
+
+---
+
+###### Fenwick Tree (Binary Indexed Tree)
+
+**Explanation**\
+Stores partial sums using lowbit; supports prefix sums and point updates.
+
+- Time: O(log n) per op
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function add(i, delta):
+    while i ≤ n:
+        bit[i] += delta
+        i += i & -i
+
+function sum(i):
+    s ← 0
+    while i > 0:
+        s += bit[i]
+        i -= i & -i
+    return s
+```
+
+**Code**  
+- C++: [`fenwick_tree.cpp`](Nodes/Derived_Structures/Tree/fenwick_tree.cpp)  
+- Python: [`fenwick_tree.py`](Nodes/Derived_Structures/Tree/fenwick_tree.py)
+
+---
+
+###### Trie (prefix tree)
+
+**Explanation**\
+Edges labeled by characters; supports prefix queries and dictionary ops.
+
+- Time: O(L) per op where L=word length
+- Space: O(Σ·nodes)
+
+**Pseudo Code**
+```text
+function insert(root, word):
+    u ← root
+    for ch in word:
+        if ch not in u.next: u.next[ch] ← new Node()
+        u ← u.next[ch]
+    u.end ← true
+```
+
+**Code**  
+- C++: [`trie.cpp`](Nodes/Derived_Structures/Tree/trie.cpp)  
+- Python: [`trie.py`](Nodes/Derived_Structures/Tree/trie.py)
+
+---
+
+###### Suffix Tree (compressed trie of all suffixes)
+
+**Explanation**\
+Indexes all suffixes for fast substring queries. Practical builds use Ukkonen’s algorithm (linear time).
+
+- Time: O(n) build (Ukkonen), O(m) query
+- Space: O(n)
+
+**Pseudo Code**
+```text
+# High-level sketch: compress edges with (start,end) indices into original string
+function build_suffix_tree(s):
+    root ← new Node()
+    for i in 0..|s|-1:
+        extend_with_suffix(s[i..], root)  # uses active point & implicit suffixes in Ukkonen
+    return root
+```
+
+**Code**  
+- C++: [`suffix_tree.cpp`](Nodes/Derived_Structures/Tree/suffix_tree.cpp)  
+- Python: [`suffix_tree.py`](Nodes/Derived_Structures/Tree/suffix_tree.py)
+
+---
+
+###### Heap Tree (binary heap as tree/array)
+
+**Explanation**\
+Complete binary tree with heap-order; supports `push`/`pop`. Typically stored in array.
+
+- Time: O(log n) push/pop; O(n) build (heapify)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function sift_up(i):
+    while i>0 and A[parent(i)]<A[i]:
+        swap A[parent(i)], A[i]
+        i ← parent(i)
+
+function sift_down(i, n):
+    while left(i) < n:
+        j ← left(i)
+        if right(i)<n and A[right(i)]>A[j]: j ← right(i)
+        if A[i] ≥ A[j]: break
+        swap A[i], A[j]; i ← j
+```
+
+**Code**  
+- C++: [`heap_tree.cpp`](Nodes/Derived_Structures/Tree/heap_tree.cpp)  
+- Python: [`heap_tree.py`](Nodes/Derived_Structures/Tree/heap_tree.py)
+
+---
 
 #### Graph
-- [`adjacency_list.cpp`](Nodes/Derived_Structures/Graph/adjacency_list.cpp) · [`adjacency_list.py`](Nodes/Derived_Structures/Graph/adjacency_list.py)
-- [`bfs.cpp`](Nodes/Derived_Structures/Graph/bfs.cpp) · [`bfs.py`](Nodes/Derived_Structures/Graph/bfs.py)
-- [`dfs.cpp`](Nodes/Derived_Structures/Graph/dfs.cpp) · [`dfs.py`](Nodes/Derived_Structures/Graph/dfs.py)
-- [`dijkstra.cpp`](Nodes/Derived_Structures/Graph/dijkstra.cpp) · [`dijkstra.py`](Nodes/Derived_Structures/Graph/dijkstra.py)
-- [`bellman_ford.cpp`](Nodes/Derived_Structures/Graph/bellman_ford.cpp) · [`bellman_ford.py`](Nodes/Derived_Structures/Graph/bellman_ford.py)
-- [`floyd_warshall.cpp`](Nodes/Derived_Structures/Graph/floyd_warshall.cpp) · [`floyd_warshall.py`](Nodes/Derived_Structures/Graph/floyd_warshall.py)
-- [`kruskal.cpp`](Nodes/Derived_Structures/Graph/kruskal.cpp) · [`kruskal.py`](Nodes/Derived_Structures/Graph/kruskal.py)
-- [`prim.cpp`](Nodes/Derived_Structures/Graph/prim.cpp) · [`prim.py`](Nodes/Derived_Structures/Graph/prim.py)
-- [`topological_sort.cpp`](Nodes/Derived_Structures/Graph/topological_sort.cpp) · [`topological_sort.py`](Nodes/Derived_Structures/Graph/topological_sort.py)
-- [`tarjan_scc.cpp`](Nodes/Derived_Structures/Graph/tarjan_scc.cpp) · [`tarjan_scc.py`](Nodes/Derived_Structures/Graph/tarjan_scc.py)
-- [`kosaraju_scc.cpp`](Nodes/Derived_Structures/Graph/kosaraju_scc.cpp) · [`kosaraju_scc.py`](Nodes/Derived_Structures/Graph/kosaraju_scc.py)
 
+###### Adjacency List (representation)
+
+**Explanation**\
+For each vertex, store list of neighbors (with weights if weighted).
+
+- Time: O(1) average to add edge; total storage O(V+E)
+- Space: O(V+E)
+
+**Pseudo Code**
+```text
+function add_edge(adj, u, v, w=1, undirected=true):
+    adj[u].append((v,w))
+    if undirected: adj[v].append((u,w))
+```
+
+**Code**  
+- C++: [`adjacency_list.cpp`](Nodes/Derived_Structures/Graph/adjacency_list.cpp)  
+- Python: [`adjacency_list.py`](Nodes/Derived_Structures/Graph/adjacency_list.py)
+
+---
+
+###### Breadth-First Search (BFS)
+
+**Explanation**\
+Level-order traversal; shortest path in unweighted graphs.
+
+- Time: O(V+E)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function bfs(adj, s):
+    dist[all] ← ∞; dist[s] ← 0
+    q ← [s]
+    while q not empty:
+        u ← pop_front(q)
+        for (v,_) in adj[u]:
+            if dist[v] == ∞:
+                dist[v] ← dist[u] + 1
+                parent[v] ← u
+                push_back(q, v)
+```
+
+**Code**  
+- C++: [`bfs.cpp`](Nodes/Derived_Structures/Graph/bfs.cpp)  
+- Python: [`bfs.py`](Nodes/Derived_Structures/Graph/bfs.py)
+
+---
+
+###### Depth-First Search (DFS)
+
+**Explanation**\
+Explore as far as possible along each branch before backtracking.
+
+- Time: O(V+E)
+- Space: O(V) recursion/stack
+
+**Pseudo Code**
+```text
+function dfs(u):
+    seen[u] ← true
+    for (v,_) in adj[u]:
+        if not seen[v]: dfs(v)
+```
+
+**Code**  
+- C++: [`dfs.cpp`](Nodes/Derived_Structures/Graph/dfs.cpp)  
+- Python: [`dfs.py`](Nodes/Derived_Structures/Graph/dfs.py)
+
+---
+
+###### Dijkstra’s Shortest Path (non-negative weights)
+
+**Explanation**\
+Greedy expansion by distance using a min-heap.
+
+- Time: O(E log V) with binary heap
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function dijkstra(adj, s):
+    dist[all] ← ∞; dist[s] ← 0
+    pq ← {(0,s)}
+    while pq not empty:
+        (d,u) ← pop_min(pq)
+        if d ≠ dist[u]: continue
+        for (v,w) in adj[u]:
+            if dist[v] > d + w:
+                dist[v] ← d + w
+                parent[v] ← u
+                push(pq, (dist[v], v))
+```
+
+**Code**  
+- C++: [`dijkstra.cpp`](Nodes/Derived_Structures/Graph/dijkstra.cpp)  
+- Python: [`dijkstra.py`](Nodes/Derived_Structures/Graph/dijkstra.py)
+
+---
+
+###### Bellman–Ford (handles negative edges)
+
+**Explanation**\
+Relax all edges |V|−1 times; detects negative cycles.
+
+- Time: O(VE)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function bellman_ford(edges, V, s):
+    dist[all] ← ∞; dist[s] ← 0
+    for i in 1..V-1:
+        for (u,v,w) in edges:
+            dist[v] ← min(dist[v], dist[u]+w)
+    # optional: check for negative cycles
+```
+
+**Code**  
+- C++: [`bellman_ford.cpp`](Nodes/Derived_Structures/Graph/bellman_ford.cpp)  
+- Python: [`bellman_ford.py`](Nodes/Derived_Structures/Graph/bellman_ford.py)
+
+---
+
+###### Floyd–Warshall (all-pairs shortest paths)
+
+**Explanation**\
+DP over intermediate vertices to update distance matrix.
+
+- Time: O(V³)
+- Space: O(V²)
+
+**Pseudo Code**
+```text
+for k in 1..V:
+    for i in 1..V:
+        for j in 1..V:
+            dist[i][j] ← min(dist[i][j], dist[i][k]+dist[k][j])
+```
+
+**Code**  
+- C++: [`floyd_warshall.cpp`](Nodes/Derived_Structures/Graph/floyd_warshall.cpp)  
+- Python: [`floyd_warshall.py`](Nodes/Derived_Structures/Graph/floyd_warshall.py)
+
+---
+
+###### Kruskal’s MST
+
+**Explanation**\
+Sort edges by weight and union components; use DSU/Union-Find.
+
+- Time: O(E log E)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function kruskal(edges, V):
+    sort edges by w
+    dsu ← new DSU(V)
+    mst ← []
+    for (u,v,w) in edges:
+        if dsu.find(u) ≠ dsu.find(v):
+            dsu.union(u,v); mst.append((u,v,w))
+    return mst
+```
+
+**Code**  
+- C++: [`kruskal.cpp`](Nodes/Derived_Structures/Graph/kruskal.cpp)  
+- Python: [`kruskal.py`](Nodes/Derived_Structures/Graph/kruskal.py)
+
+---
+
+###### Prim’s MST
+
+**Explanation**\
+Grow tree from a start vertex, adding cheapest crossing edge using a min-heap.
+
+- Time: O(E log V)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function prim(adj, s):
+    inMST[all] ← false
+    pq ← {(0,s,-1)}  # (w, v, parent)
+    mst ← []
+    while pq not empty:
+        (w,v,p) ← pop_min(pq)
+        if inMST[v]: continue
+        inMST[v] ← true
+        if p ≠ -1: mst.append((p,v,w))
+        for (to,c) in adj[v]:
+            if not inMST[to]: push(pq,(c,to,v))
+    return mst
+```
+
+**Code**  
+- C++: [`prim.cpp`](Nodes/Derived_Structures/Graph/prim.cpp)  
+- Python: [`prim.py`](Nodes/Derived_Structures/Graph/prim.py)
+
+---
+
+###### Topological Sort (DAG)
+
+**Explanation**\
+Order vertices so all edges go forward; Kahn’s algorithm (BFS on zero indegrees).
+
+- Time: O(V+E)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function topo_sort(adj):
+    indeg ← count_incoming(adj)
+    q ← [v | indeg[v]==0]
+    order ← []
+    while q not empty:
+        u ← pop_front(q); order.append(u)
+        for v in adj[u]:
+            indeg[v] -= 1
+            if indeg[v]==0: push_back(q, v)
+    return order
+```
+
+**Code**  
+- C++: [`topological_sort.cpp`](Nodes/Derived_Structures/Graph/topological_sort.cpp)  
+- Python: [`topological_sort.py`](Nodes/Derived_Structures/Graph/topological_sort.py)
+
+---
+
+###### Strongly Connected Components — Tarjan
+
+**Explanation**\
+Single DFS computing discovery times and low-links; stack tracks current component.
+
+- Time: O(V+E)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function tarjan(u):
+    disc[u] ← low[u] ← ++time
+    push(stack, u); inStack[u] ← true
+    for v in adj[u]:
+        if disc[v]==0: tarjan(v); low[u] ← min(low[u], low[v])
+        elif inStack[v]: low[u] ← min(low[u], disc[v])
+    if low[u] == disc[u]:
+        comp ← []
+        repeat:
+            w ← pop(stack); inStack[w] ← false; comp.append(w)
+        until w == u
+```
+
+**Code**  
+- C++: [`tarjan_scc.cpp`](Nodes/Derived_Structures/Graph/tarjan_scc.cpp)  
+- Python: [`tarjan_scc.py`](Nodes/Derived_Structures/Graph/tarjan_scc.py)
+
+---
+
+###### Strongly Connected Components — Kosaraju
+
+**Explanation**\
+DFS to get finish order, reverse graph, DFS in that order to collect components.
+
+- Time: O(V+E)
+- Space: O(V)
+
+**Pseudo Code**
+```text
+function kosaraju(adj):
+    order ← []
+    seen ← set()
+    for v in V: if v not in seen: dfs1(v)
+    gr ← reverse_graph(adj)
+    seen ← ∅
+    for v in reversed(order):
+        if v not in seen: comp ← []; dfs2(v); output comp
+
+function dfs1(u):
+    seen.add(u)
+    for v in adj[u]: if v not in seen: dfs1(v)
+    order.append(u)
+```
+
+**Code**  
+- C++: [`kosaraju_scc.cpp`](Nodes/Derived_Structures/Graph/kosaraju_scc.cpp)  
+- Python: [`kosaraju_scc.py`](Nodes/Derived_Structures/Graph/kosaraju_scc.py)
 ---
 
 ## Hashes
