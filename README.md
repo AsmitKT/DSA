@@ -1479,63 +1479,501 @@ function majority(A):
 
 ## Matrix
 
-Matrices represent 2D collections of values. They support structured traversal, transformations, and specialized multiplication algorithms.
+Matrices are 2D collections of values (rows × columns). They support structured traversal, transformations, searching patterns on sorted matrices, and specialized multiplication algorithms.
 
-### Matrix: Implementation
+### Implementation
 
 - **C++**: [`2D_array.cpp`](Matrix/Implementation/C%2B%2B/2D_array.cpp) · [`nested_vector.cpp`](Matrix/Implementation/C%2B%2B/nested_vector.cpp)  
 - **Python**: [`nested_list.py`](Matrix/Implementation/Python/nested_list.py) · [`list_comprehensions.py`](Matrix/Implementation/Python/list_comprehensions.py) · [`numpy_arrays.py`](Matrix/Implementation/Python/numpy_arrays.py)
 
-### Matrix: Algorithms
+---
+
+### Algorithms
 
 #### Traversal
-- [`row_wise.cpp`](Matrix/Algorithms/Traversal/row_wise.cpp) · [`row_wise.py`](Matrix/Algorithms/Traversal/row_wise.py)
-- [`column_wise.cpp`](Matrix/Algorithms/Traversal/column_wise.cpp) · [`column_wise.py`](Matrix/Algorithms/Traversal/column_wise.py)
-- [`diagonal.cpp`](Matrix/Algorithms/Traversal/diagonal.cpp) · [`diagonal.py`](Matrix/Algorithms/Traversal/diagonal.py)
-- [`spiral.cpp`](Matrix/Algorithms/Traversal/spiral.cpp) · [`spiral.py`](Matrix/Algorithms/Traversal/spiral.py)
 
-#### Matrix Searching {#matrix-searching}
-- [`linear_search_matrix.cpp`](Matrix/Algorithms/Searching/linear_search_matrix.cpp) · [`linear_search_matrix.py`](Matrix/Algorithms/Searching/linear_search_matrix.py)
-- [`staircase_search.cpp`](Matrix/Algorithms/Searching/staircase_search.cpp) · [`staircase_search.py`](Matrix/Algorithms/Searching/staircase_search.py)
+##### Row-wise
+**Explanation**  
+Visit each row left → right.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+for i in 0..rows-1:
+    for j in 0..cols-1:
+        visit(A[i][j])
+```
+
+**Code**  
+C++: [`row_wise.cpp`](Matrix/Algorithms/Traversal/row_wise.cpp) · Python: [`row_wise.py`](Matrix/Algorithms/Traversal/row_wise.py)
+
+---
+
+##### Column-wise
+**Explanation**  
+Visit each column top → bottom.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+for j in 0..cols-1:
+    for i in 0..rows-1:
+        visit(A[i][j])
+```
+
+**Code**  
+C++: [`column_wise.cpp`](Matrix/Algorithms/Traversal/column_wise.cpp) · Python: [`column_wise.py`](Matrix/Algorithms/Traversal/column_wise.py)
+
+---
+
+##### Diagonal (primary & secondary)
+**Explanation**  
+Walk along diagonals. Primary (i==j), secondary (i+j==n-1) for square matrices; for all diagonals, iterate by (r+c) keys.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code (all diagonals, TL → BR)**
+```text
+for s in 0..(rows+cols-2):
+    i ← max(0, s-(cols-1))
+    j ← s - i
+    while i < rows and j ≥ 0:
+        visit(A[i][j])
+        i ← i + 1
+        j ← j - 1
+```
+
+**Code**  
+C++: [`diagonal.cpp`](Matrix/Algorithms/Traversal/diagonal.cpp) · Python: [`diagonal.py`](Matrix/Algorithms/Traversal/diagonal.py)
+
+---
+
+##### Spiral
+**Explanation**  
+Peel layers: top row, right column, bottom row, left column; shrink bounds.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+top ← 0; left ← 0; bottom ← rows-1; right ← cols-1
+while top ≤ bottom and left ≤ right:
+    for j in left..right: visit(A[top][j])
+    top ← top + 1
+    for i in top..bottom: visit(A[i][right])
+    right ← right - 1
+    if top ≤ bottom:
+        for j in right..left step -1: visit(A[bottom][j])
+        bottom ← bottom - 1
+    if left ≤ right:
+        for i in bottom..top step -1: visit(A[i][left])
+        left ← left + 1
+```
+
+**Code**  
+C++: [`spiral.cpp`](Matrix/Algorithms/Traversal/spiral.cpp) · Python: [`spiral.py`](Matrix/Algorithms/Traversal/spiral.py)
+
+---
+
+#### Searching
+
+##### Linear Search (unsorted matrix)
+**Explanation**  
+Scan every cell until found.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+for i in 0..rows-1:
+    for j in 0..cols-1:
+        if A[i][j] == x: return (i, j)
+return (-1, -1)
+```
+
+**Code**  
+C++: [`linear_search_matrix.cpp`](Matrix/Algorithms/Searching/linear_search_matrix.cpp) · Python: [`linear_search_matrix.py`](Matrix/Algorithms/Searching/linear_search_matrix.py)
+
+---
+
+##### Staircase Search (rows & columns sorted)
+**Explanation**  
+Start at top-right. If current < x, go down; if current > x, go left.
+
+- Time: O(r + c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+i ← 0; j ← cols-1
+while i < rows and j ≥ 0:
+    if A[i][j] == x: return (i, j)
+    if A[i][j] < x: i ← i + 1 else: j ← j - 1
+return (-1, -1)
+```
+
+**Code**  
+C++: [`staircase_search.cpp`](Matrix/Algorithms/Searching/staircase_search.cpp) · Python: [`staircase_search.py`](Matrix/Algorithms/Searching/staircase_search.py)
+
+---
 
 #### Transformation
-- [`transpose.cpp`](Matrix/Algorithms/Transformation/transpose.cpp) · [`transpose.py`](Matrix/Algorithms/Transformation/transpose.py)
-- [`rotate.cpp`](Matrix/Algorithms/Transformation/rotate.cpp) · [`rotate.py`](Matrix/Algorithms/Transformation/rotate.py)
-- [`flip.cpp`](Matrix/Algorithms/Transformation/flip.cpp) · [`flip.py`](Matrix/Algorithms/Transformation/flip.py)
-- [`shear.cpp`](Matrix/Algorithms/Transformation/shear.cpp) · [`shear.py`](Matrix/Algorithms/Transformation/shear.py)
-- [`scale.cpp`](Matrix/Algorithms/Transformation/scale.cpp) · [`scale.py`](Matrix/Algorithms/Transformation/scale.py)
+
+##### Transpose
+**Explanation**  
+Swap rows and columns: `B[j][i] = A[i][j]`. In-place for square matrices by swapping above the diagonal.
+
+- Time: O(r·c)  
+- Space: O(1) in-place (square), O(r·c) otherwise
+
+**Pseudo Code**
+```text
+for i in 0..n-1:
+    for j in i+1..n-1:
+        swap(A[i][j], A[j][i])
+```
+
+**Code**  
+C++: [`transpose.cpp`](Matrix/Algorithms/Transformation/transpose.cpp) · Python: [`transpose.py`](Matrix/Algorithms/Transformation/transpose.py)
+
+---
+
+##### Rotate (90°)
+**Explanation**  
+Rotate 90° clockwise: transpose then reverse each row (or reverse columns then transpose).
+
+- Time: O(n²)  
+- Space: O(1) in-place for square
+
+**Pseudo Code**
+```text
+transpose(A)
+for each row i:
+    reverse(A[i])
+```
+
+**Code**  
+C++: [`rotate.cpp`](Matrix/Algorithms/Transformation/rotate.cpp) · Python: [`rotate.py`](Matrix/Algorithms/Transformation/rotate.py)
+
+---
+
+##### Flip (horizontal/vertical)
+**Explanation**  
+Horizontal: reverse each row. Vertical: reverse row order.
+
+- Time: O(r·c)  
+- Space: O(1)
+
+**Pseudo Code**
+```text
+# horizontal
+for i in 0..rows-1: reverse(A[i])
+
+# vertical
+for i in 0..rows/2-1: swap(A[i], A[rows-1-i])
+```
+
+**Code**  
+C++: [`flip.cpp`](Matrix/Algorithms/Transformation/flip.cpp) · Python: [`flip.py`](Matrix/Algorithms/Transformation/flip.py)
+
+---
+
+##### Shear (geometric transform)
+**Explanation**  
+Apply shear transform `(x', y') = (x + kx·y, y + ky·x)`. For discrete grids, map each source cell to a new integer location with chosen rounding/interpolation.
+
+- Time: O(r·c)  
+- Space: O(r·c) (target buffer)
+
+**Pseudo Code**
+```text
+B ← empty with computed new bounds
+for y in 0..rows-1:
+    for x in 0..cols-1:
+        x2 ← round(x + kx * y)
+        y2 ← round(y + ky * x)
+        B[y2][x2] ← A[y][x]
+return B
+```
+
+**Code**  
+C++: [`shear.cpp`](Matrix/Algorithms/Transformation/shear.cpp) · Python: [`shear.py`](Matrix/Algorithms/Transformation/shear.py)
+
+---
+
+##### Scale (nearest-neighbor)
+**Explanation**  
+Resize matrix by factors `sx, sy`. Nearest-neighbor maps each target cell back to a source cell.
+
+- Time: O(r'·c')  
+- Space: O(r'·c)
+
+**Pseudo Code**
+```text
+rows2 ← floor(rows * sy); cols2 ← floor(cols * sx)
+B ← zeros(rows2, cols2)
+for y2 in 0..rows2-1:
+    for x2 in 0..cols2-1:
+        y ← floor(y2 / sy); x ← floor(x2 / sx)
+        B[y2][x2] ← A[y][x]
+return B
+```
+
+**Code**  
+C++: [`scale.cpp`](Matrix/Algorithms/Transformation/scale.cpp) · Python: [`scale.py`](Matrix/Algorithms/Transformation/scale.py)
+
+---
 
 #### Specialized Algos
-- [`matrix_multiplication_naive.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_naive.cpp) · [`matrix_multiplication_naive.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_naive.py)
-- [`matrix_multiplication_strassen.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_strassen.cpp) · [`matrix_multiplication_strassen.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_strassen.py)
-- [`matrix_multiplication_winograd.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_winograd.cpp) · [`matrix_multiplication_winograd.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_winograd.py)
-- [`sparse_matrix_operations.cpp`](Matrix/Algorithms/Specialized_Algos/sparse_matrix_operations.cpp) · [`sparse_matrix_operations.py`](Matrix/Algorithms/Specialized_Algos/sparse_matrix_operations.py)
 
-### Matrix: Derived Structures
+##### Matrix Multiplication (Naive)
+**Explanation**  
+Triple loop: `C[i][j] += A[i][k] * B[k][j]`.
 
-#### Sparse Matrix
-- **C++**: [`sparse_matrix.cpp`](Matrix/Derived_Structures/Sparse_Matrix/Implementation/sparse_matrix.cpp)  
-- **Python**: [`sparse_matrix.py`](Matrix/Derived_Structures/Sparse_Matrix/Implementation/sparse_matrix.py)
+- Time: O(n³)  
+- Space: O(n²)
 
-#### Adjacency Matrix
-- **C++**: [`adjacency_matrix.cpp`](Matrix/Derived_Structures/Adjacency_Matrix/Implementation/adjacency_matrix.cpp)  
-- **Python**: [`adjacency_matrix.py`](Matrix/Derived_Structures/Adjacency_Matrix/Implementation/adjacency_matrix.py)
+**Pseudo Code**
+```text
+for i in 0..n-1:
+    for j in 0..n-1:
+        sum ← 0
+        for k in 0..n-1:
+            sum ← sum + A[i][k]*B[k][j]
+        C[i][j] ← sum
+```
 
-#### Incidence Matrix
-- **C++**: [`incidence_matrix.cpp`](Matrix/Derived_Structures/Incidence_Matrix/Implementation/incidence_matrix.cpp)  
-- **Python**: [`incidence_matrix.py`](Matrix/Derived_Structures/Incidence_Matrix/Implementation/incidence_matrix.py)
+**Code**  
+C++: [`matrix_multiplication_naive.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_naive.cpp) · Python: [`matrix_multiplication_naive.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_naive.py)
 
-#### Transformation Matrix
-- **C++**: [`transformation_matrix.cpp`](Matrix/Derived_Structures/Transformation_Matrix/Implementation/transformation_matrix.cpp)  
-- **Python**: [`transformation_matrix.py`](Matrix/Derived_Structures/Transformation_Matrix/Implementation/transformation_matrix.py)
+---
 
-#### Markov Matrix
-- **C++**: [`markov_matrix.cpp`](Matrix/Derived_Structures/Markov_Matrix/Implementation/markov_matrix.cpp)  
-- **Python**: [`markov_matrix.py`](Matrix/Derived_Structures/Markov_Matrix/Implementation/markov_matrix.py)
+##### Strassen’s Multiplication
+**Explanation**  
+Divide matrices into 4 blocks, compute 7 products (M₁..M₇), combine to reduce multiplications.
+
+- Time: O(n^log₂7) ≈ O(n^2.807)  
+- Space: O(n²) extra
+
+**Pseudo Code (outline)**
+```text
+if n == 1: return A*B
+partition A,B into a11,a12,a21,a22 and b11,b12,b21,b22
+compute M1..M7 from block sums/differences
+reconstruct C blocks from M1..M7
+```
+
+**Code**  
+C++: [`matrix_multiplication_strassen.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_strassen.cpp) · Python: [`matrix_multiplication_strassen.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_strassen.py)
+
+---
+
+##### Winograd (optimized arithmetic)
+**Explanation**  
+Precompute row/column factors to reduce multiplications versus naive; helpful for certain sizes.
+
+- Time: ~O(n³) but fewer mults than naive  
+- Space: O(n²)
+
+**Pseudo Code (high-level)**
+```text
+rowFactor[i] ← sum over k of A[i][2k]*A[i][2k+1]
+colFactor[j] ← sum over k of B[2k][j]*B[2k+1][j]
+for i,j:
+    C[i][j] ← -rowFactor[i] - colFactor[j]
+    for k step 2:
+        C[i][j] += (A[i][k]+B[k+1][j])*(A[i][k+1]+B[k][j])
+handle odd dimension tail
+```
+
+**Code**  
+C++: [`matrix_multiplication_winograd.cpp`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_winograd.cpp) · Python: [`matrix_multiplication_winograd.py`](Matrix/Algorithms/Specialized_Algos/matrix_multiplication_winograd.py)
+
+---
+
+##### Sparse Matrix Operations
+**Explanation**  
+Store only nonzeros (e.g., COO/CSR). Addition merges by (row,col); multiplication iterates over matching indices.
+
+- Time: Addition O(nnzA + nnzB); Multiplication O(∑ row nnz × matching col nnz)  
+- Space: O(nnz)
+
+**Pseudo Code (COO addition)**
+```text
+i ← j ← 0; out ← []
+while i < nnzA or j < nnzB:
+    pick smaller (r,c) key; sum values if equal; append nonzero to out
+return out
+```
+
+**Code**  
+C++: [`sparse_matrix_operations.cpp`](Matrix/Algorithms/Specialized_Algos/sparse_matrix_operations.cpp) · Python: [`sparse_matrix_operations.py`](Matrix/Algorithms/Specialized_Algos/sparse_matrix_operations.py)
+
+---
+
+### Derived Structures
+
+#### Sparse Matrix (COO/CSR)
+**Explanation**  
+Represent only non-zero entries for memory efficiency.  
+- **COO**: list of `(row, col, val)` triples.  
+- **CSR**: three arrays `(row_ptr, col_idx, values)` enabling fast row slicing and `A·x`.
+
+- Build: O(nnz)  
+- Common ops: get/set O(log nnz) with ordered COO or O(row nnz) CSR; `A·x` in O(nnz).
+
+**Pseudo Code (COO → CSR and SpMV)**
+```text
+# build CSR from COO
+row_ptr ← zeros(rows+1)
+for (r,c,v) in coo: row_ptr[r+1] += 1
+for i in 1..rows: row_ptr[i] += row_ptr[i-1]
+col_idx, val ← arrays of length nnz
+# place elements (stable) by tracking next[row]
+next ← copy(row_ptr)
+for (r,c,v) in coo:
+    k ← next[r]; col_idx[k] ← c; val[k] ← v; next[r] += 1
+
+# y = A * x  (CSR)
+for r in 0..rows-1:
+    sum ← 0
+    for k in row_ptr[r] .. row_ptr[r+1]-1:
+        sum += val[k] * x[col_idx[k]]
+    y[r] ← sum
+```
+
+**Code**  
+C++: [`sparse_matrix.cpp`](Matrix/Derived_Structures/Sparse_Matrix/Implementation/sparse_matrix.cpp) · Python: [`sparse_matrix.py`](Matrix/Derived_Structures/Sparse_Matrix/Implementation/sparse_matrix.py)
+
+---
+
+#### Adjacency Matrix (Graph)
+**Explanation**  
+Graph with `n` vertices as an `n×n` matrix `G` where `G[u][v]` is 1/weight if edge `(u,v)` exists, else 0.  
+- Undirected: `G` is symmetric.  
+- Degree(u) (unweighted): out-degree = sum of row `u`.  
+- Space: O(n²). Good for dense graphs.
+
+**Pseudo Code (core ops)**
+```text
+# create
+G ← zeros(n, n)
+
+# add/remove edge (directed)
+add_edge(u, v, w=1): G[u][v] ← w
+remove_edge(u, v):   G[u][v] ← 0
+
+# is edge?
+has_edge(u, v): return G[u][v] ≠ 0
+
+# neighbors of u (out-neighbors)
+neighbors(u):
+    L ← []
+    for v in 0..n-1:
+        if G[u][v] ≠ 0: append v to L
+    return L
+```
+
+**Code**  
+C++: [`adjacency_matrix.cpp`](Matrix/Derived_Structures/Adjacency_Matrix/Implementation/adjacency_matrix.cpp) · Python: [`adjacency_matrix.py`](Matrix/Derived_Structures/Adjacency_Matrix/Implementation/adjacency_matrix.py)
+
+---
+
+#### Incidence Matrix (Graph)
+**Explanation**  
+For a graph with `n` vertices and `m` edges, the **incidence matrix** `B` is `n×m`.  
+- Undirected edge `e=(u,v)`: set `B[u][e]=1`, `B[v][e]=1`.  
+- Directed edge `e=(u→v)`: set `B[u][e]=+1`, `B[v][e]=-1`.  
+- Space: O(n·m). Useful for linear-algebraic graph formulations (cuts/flows).
+
+**Pseudo Code (build from edge list)**
+```text
+B ← zeros(n, m)
+for e, (u, v, directed) in enumerate(edges):
+    if directed:
+        B[u][e] ← +1
+        B[v][e] ← -1
+    else:
+        B[u][e] ← 1
+        B[v][e] ← 1
+```
+
+**Code**  
+C++: [`incidence_matrix.cpp`](Matrix/Derived_Structures/Incidence_Matrix/Implementation/incidence_matrix.cpp) · Python: [`incidence_matrix.py`](Matrix/Derived_Structures/Incidence_Matrix/Implementation/incidence_matrix.py)
+
+---
+
+#### Transformation Matrix (2D/3D, homogeneous coords)
+**Explanation**  
+Use homogeneous coordinates to express 2D (3×3) / 3D (4×4) transforms: translation, rotation, scaling, shear.  
+- Apply to a point `p`: `p' = T · p`.  
+- Compose transforms by matrix multiplication: `T = Tn · … · T2 · T1`.
+
+**Pseudo Code (apply to list of points, 2D)**
+```text
+# points as column vectors [x, y, 1]^T
+apply_transform(T, points):
+    out ← []
+    for p in points:
+        x,y ← p
+        ph ← [x, y, 1]
+        p2 ← T * ph
+        out.append([p2[0]/p2[2], p2[1]/p2[2]])
+    return out
+```
+
+**Code**  
+C++: [`transformation_matrix.cpp`](Matrix/Derived_Structures/Transformation_Matrix/Implementation/transformation_matrix.cpp) · Python: [`transformation_matrix.py`](Matrix/Derived_Structures/Transformation_Matrix/Implementation/transformation_matrix.py)
+
+---
+
+#### Markov Matrix (Transition / Stochastic)
+**Explanation**  
+A row-stochastic matrix `P` (each row sums to 1) encodes Markov chain transitions.  
+- One step: `π₁ = π₀ · P` (π is a row vector of state probabilities).  
+- `k` steps: `π_k = π₀ · P^k`.  
+- Stationary distribution (when it exists): `π* = π* · P`.
+
+**Pseudo Code (power iteration for steady state)**
+```text
+π ← uniform_row_vector(n)
+repeat:
+    π_new ← π * P
+    if ||π_new - π||_1 < ε: break
+    π ← π_new
+return π
+```
+
+**Code**  
+C++: [`markov_matrix.cpp`](Matrix/Derived_Structures/Markov_Matrix/Implementation/markov_matrix.cpp) · Python: [`markov_matrix.py`](Matrix/Derived_Structures/Markov_Matrix/Implementation/markov_matrix.py)
+
+---
 
 #### Distance Matrix
-- **C++**: [`distance_matrix.cpp`](Matrix/Derived_Structures/Distance_Matrix/Implementation/distance_matrix.cpp)  
-- **Python**: [`distance_matrix.py`](Matrix/Derived_Structures/Distance_Matrix/Implementation/distance_matrix.py)
+**Explanation**  
+For points `x₁..x_n`, the distance matrix `D` is `n×n` with `D[i][j]=dist(x_i, x_j)`.  
+- Symmetric with zeros on diagonal (for standard metrics).  
+- Useful for clustering, nearest neighbors, TSP heuristics.
+
+**Pseudo Code (Euclidean)**
+```text
+D ← zeros(n, n)
+for i in 0..n-1:
+    for j in i..n-1:
+        d ← sqrt( sum_k (X[i][k]-X[j][k])^2 )
+        D[i][j] ← d
+        D[j][i] ← d
+```
+
+**Code**  
+C++: [`distance_matrix.cpp`](Matrix/Derived_Structures/Distance_Matrix/Implementation/distance_matrix.cpp) · Python: [`distance_matrix.py`](Matrix/Derived_Structures/Distance_Matrix/Implementation/distance_matrix.py)
 
 ---
 
