@@ -2735,59 +2735,392 @@ function dfs1(u):
 Hash-based structures provide expected O(1) insert/lookup using hash functions and collision strategies.
 
 ### Hashes: Implementation
-- **C++**: [`map.cpp`](Hashes/Implementation/C%2B%2B/map.cpp) · [`multi_map.cpp`](Hashes/Implementation/C%2B%2B/multi_map.cpp) · [`unordered_map.cpp`](Hashes/Implementation/C%2B%2B/unordered_map.cpp) · [`unordered_multi_map.cpp`](Hashes/Implementation/C%2B%2B/unordered_multi_map.cpp) · [`set.cpp`](Hashes/Implementation/C%2B%2B/set.cpp) · [`multi_set.cpp`](Hashes/Implementation/C%2B%2B/multi_set.cpp) · [`unordered_set.cpp`](Hashes/Implementation/C%2B%2B/unordered_set.cpp) · [`unordered_multi_set.cpp`](Hashes/Implementation/C%2B%2B/unordered_multi_set.cpp) · [`hash_table_custom.cpp`](Hashes/Implementation/C%2B%2B/hash_table_custom.cpp)
+- **C++**: [`map.cpp`](Hashes/Implementation/C%2B%2B/map.cpp) · [`multi_map.cpp`](Hashes/Implementation/C%2B%2B/multi_map.cpp) · [`unordered_map.cpp`](Hashes/Implementation/C%2B%2B/unordered_map.cpp) · [`unordered_multi_map.cpp`](Hashes/Implementation/C%2B%2B/unordered_multi_map.cpp) · [`set.cpp`](Hashes/Implementation/C%2B%2B/set.cpp) · [`multi_set.cpp`](Hashes/Implementation/C%2B%2B/multi_set.cpp) · [`unordered_set.cpp`](Hashes/Implementation/C%2B%2B/unordered_set.cpp) · [`unordered_multi_set.cpp`](Hashes/Implementation/C%2B%2B/unordered_multi_set.cpp) · [`hash_table_custom.cpp`](Hashes/Implementation/C%2B%2B/hash_table_custom.cpp)  
 - **Python**: [`dict_implementation.py`](Hashes/Implementation/Python/dict_implementation.py) · [`default_dict.py`](Hashes/Implementation/Python/default_dict.py) · [`ordered_dict.py`](Hashes/Implementation/Python/ordered_dict.py) · [`set_implementation.py`](Hashes/Implementation/Python/set_implementation.py) · [`frozen_set.py`](Hashes/Implementation/Python/frozen_set.py) · [`hash_table_custom.py`](Hashes/Implementation/Python/hash_table_custom.py)
 
 ### Hash Functions
 
-#### Division Method
-- [`division_method.cpp`](Hashes/Hash_Functions/Division_Method/Implementation/division_method.cpp) · [`division_method.py`](Hashes/Hash_Functions/Division_Method/Implementation/division_method.py)
+###### Division Method
 
-#### Multiplication Method
-- [`multiplication_method.cpp`](Hashes/Hash_Functions/Multiplication_Method/Implementation/multiplication_method.cpp) · [`multiplication_method.py`](Hashes/Hash_Functions/Multiplication_Method/Implementation/multiplication_method.py)
+**Explanation**Map key `k` to `k mod m`. Choose `m` prime and not close to powers of 2/10 to reduce clustering.
 
-#### Mid Square Method
-- [`mid_square_method.cpp`](Hashes/Hash_Functions/Mid_Square_Method/Implementation/mid_square_method.cpp) · [`mid_square_method.py`](Hashes/Hash_Functions/Mid_Square_Method/Implementation/mid_square_method.py)
+- Time: O(1) per hash
+- Space: O(1)
 
-#### Folding Method
-- [`folding_method.cpp`](Hashes/Hash_Functions/Folding_Method/Implementation/folding_method.cpp) · [`folding_method.py`](Hashes/Hash_Functions/Folding_Method/Implementation/folding_method.py)
+**Pseudo Code**
+```text
+function h_division(k, m):
+    return k mod m
+```
 
-#### Universal Hashing
-- [`universal_hashing.cpp`](Hashes/Hash_Functions/Universal_Hashing/Implementation/universal_hashing.cpp) · [`universal_hashing.py`](Hashes/Hash_Functions/Universal_Hashing/Implementation/universal_hashing.py)
+**Code**  
+- C++: [`division_method.cpp`](Hashes/Hash_Functions/Division_Method/Implementation/division_method.cpp)  
+- Python: [`division_method.py`](Hashes/Hash_Functions/Division_Method/Implementation/division_method.py)
 
-#### String Hashing
-- [`string_hashing.cpp`](Hashes/Hash_Functions/String_Hashing/Implementation/string_hashing.cpp) · [`string_hashing.py`](Hashes/Hash_Functions/String_Hashing/Implementation/string_hashing.py)
+---
+
+###### Multiplication Method
+
+**Explanation**Use fractional part of `k*A`, `0 < A < 1`, typically `A = (√5 - 1)/2`. Index `⌊ m * frac(k*A) ⌋`.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function h_multiplication(k, m, A):
+    frac ← (k * A) - floor(k * A)
+    return floor(m * frac)
+```
+
+**Code**  
+- C++: [`multiplication_method.cpp`](Hashes/Hash_Functions/Multiplication_Method/Implementation/multiplication_method.cpp)  
+- Python: [`multiplication_method.py`](Hashes/Hash_Functions/Multiplication_Method/Implementation/multiplication_method.py)
+
+---
+
+###### Mid Square Method
+
+**Explanation**Square the key and extract the middle `r` bits/digits.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function h_mid_square(k, r, m):
+    s ← k * k
+    mid ← extract_middle_bits(s, r)   # implementation-specific
+    return mid mod m
+```
+
+**Code**  
+- C++: [`mid_square_method.cpp`](Hashes/Hash_Functions/Mid_Square_Method/Implementation/mid_square_method.cpp)  
+- Python: [`mid_square_method.py`](Hashes/Hash_Functions/Mid_Square_Method/Implementation/mid_square_method.py)
+
+---
+
+###### Folding Method
+
+**Explanation**Split the key’s digits/bytes into equal-size parts, sum (optionally end-around carry), then mod table size.
+
+- Time: O(#parts)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function h_folding(k as bytes[], part_size, m):
+    sum ← 0
+    for i from 0 step part_size:
+        part ← bytes_to_int(k[i .. i+part_size-1], little_endian=true)
+        sum ← sum + part
+    return sum mod m
+```
+
+**Code**  
+- C++: [`folding_method.cpp`](Hashes/Hash_Functions/Folding_Method/Implementation/folding_method.cpp)  
+- Python: [`folding_method.py`](Hashes/Hash_Functions/Folding_Method/Implementation/folding_method.py)
+
+---
+
+###### Universal Hashing
+
+**Explanation**Pick a random function from a family to minimize worst-case collisions. Classic: `h_{a,b}(x) = ((a·x + b) mod p) mod m` with prime `p > max(x)` and `a∈[1,p-1]`, `b∈[0,p-1]` chosen once.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+# setup
+choose prime p > U        # U is max key value
+choose a in [1, p-1], b in [0, p-1]
+
+function h_universal(x, m):
+    return ((a*x + b) mod p) mod m
+```
+
+**Code**  
+- C++: [`universal_hashing.cpp`](Hashes/Hash_Functions/Universal_Hashing/Implementation/universal_hashing.cpp)  
+- Python: [`universal_hashing.py`](Hashes/Hash_Functions/Universal_Hashing/Implementation/universal_hashing.py)
+
+---
+
+###### String Hashing (Polynomial / Rolling)
+
+**Explanation**Treat string as base-`B` number modulo `M`: `h(s) = Σ s[i]·B^i (mod M)`. Supports rolling updates for substrings; use double hashing to reduce collisions.
+
+- Time: O(|s|) to build; O(1) per roll
+- Space: O(|s|) for precomputed powers (optional)
+
+**Pseudo Code**
+```text
+function poly_hash(s, B, M):
+    h ← 0; p ← 1
+    for ch in s:              # iterate left→right
+        h ← (h + value(ch) * p) mod M
+        p ← (p * B) mod M
+    return h
+```
+
+**Code**  
+- C++: [`string_hashing.cpp`](Hashes/Hash_Functions/String_Hashing/Implementation/string_hashing.cpp)  
+- Python: [`string_hashing.py`](Hashes/Hash_Functions/String_Hashing/Implementation/string_hashing.py)
+
+---
 
 ### Collision Resolution
 
-#### Separate Chaining
-- [`separate_chaining.cpp`](Hashes/Collision_Resolution/Separate_Chaining/Implementation/separate_chaining.cpp) · [`separate_chaining.py`](Hashes/Collision_Resolution/Separate_Chaining/Implementation/separate_chaining.py)
+###### Separate Chaining
 
-#### Linear Probing
-- [`linear_probing.cpp`](Hashes/Collision_Resolution/Linear_Probing/Implementation/linear_probing.cpp) · [`linear_probing.py`](Hashes/Collision_Resolution/Linear_Probing/Implementation/linear_probing.py)
+**Explanation**Array of buckets (lists/vectors). Insert/search within bucket indexed by hash. Load factor `α = n/m` can exceed 1; expected O(1) operations when using good hashing.
 
-#### Quadratic Probing
-- [`quadratic_probing.cpp`](Hashes/Collision_Resolution/Quadratic_Probing/Implementation/quadratic_probing.cpp) · [`quadratic_probing.py`](Hashes/Collision_Resolution/Quadratic_Probing/Implementation/quadratic_probing.py)
+- Time: Expected O(1) insert/search/delete; worst O(n)
+- Space: O(n + m)
 
-#### Double Hashing
-- [`double_hashing.cpp`](Hashes/Collision_Resolution/Double_Hashing/Implementation/double_hashing.cpp) · [`double_hashing.py`](Hashes/Collision_Resolution/Double_Hashing/Implementation/double_hashing.py)
+**Pseudo Code**
+```text
+table: array of lists size m
 
-#### Cuckoo Hashing
-- [`cuckoo_hashing.cpp`](Hashes/Collision_Resolution/Cuckoo_Hashing/Implementation/cuckoo_hashing.cpp) · [`cuckoo_hashing.py`](Hashes/Collision_Resolution/Cuckoo_Hashing/Implementation/cuckoo_hashing.py)
+function insert(k, v):
+    i ← h(k)
+    for (key, _) in table[i]:
+        if key == k: update value; return
+    push_front(table[i], (k, v))
+
+function find(k):
+    i ← h(k)
+    for (key, value) in table[i]:
+        if key == k: return value
+    return ⊥
+
+function erase(k):
+    i ← h(k)
+    remove first pair with key == k from table[i]
+```
+
+**Code**  
+- C++: [`separate_chaining.cpp`](Hashes/Collision_Resolution/Separate_Chaining/Implementation/separate_chaining.cpp)  
+- Python: [`separate_chaining.py`](Hashes/Collision_Resolution/Separate_Chaining/Implementation/separate_chaining.py)
+
+---
+
+###### Linear Probing (Open Addressing)
+
+**Explanation**Probe sequence: `i, i+1, i+2, … (mod m)`. Maintain tombstones for deletions. Keep load factor `α < 0.7` for performance.
+
+- Time: Expected O(1) (when α small); worst O(m)
+- Space: O(m)
+
+**Pseudo Code**
+```text
+table: array of (key, value, state) where state ∈ {EMPTY, FILLED, DELETED}
+
+function insert(k, v):
+    i ← h(k)
+    for t in 0..m-1:
+        j ← (i + t) mod m
+        if table[j].state in {EMPTY, DELETED}:
+            table[j] ← (k, v, FILLED); return
+        if table[j].state == FILLED and table[j].key == k:
+            table[j].value ← v; return
+    rehash()
+
+function find(k):
+    i ← h(k)
+    for t in 0..m-1:
+        j ← (i + t) mod m
+        if table[j].state == EMPTY: return ⊥    # stop early
+        if table[j].state == FILLED and table[j].key == k: return table[j].value
+    return ⊥
+
+function erase(k):
+    i ← h(k)
+    for t in 0..m-1:
+        j ← (i + t) mod m
+        if table[j].state == EMPTY: return
+        if table[j].state == FILLED and table[j].key == k:
+            table[j].state ← DELETED; return
+```
+
+**Code**  
+- C++: [`linear_probing.cpp`](Hashes/Collision_Resolution/Linear_Probing/Implementation/linear_probing.cpp)  
+- Python: [`linear_probing.py`](Hashes/Collision_Resolution/Linear_Probing/Implementation/linear_probing.py)
+
+---
+
+###### Quadratic Probing
+
+**Explanation**Probe offsets grow quadratically: `i + c1·t + c2·t² (mod m)`. Avoids primary clustering; may suffer secondary clustering. Parameters and prime `m` help guarantee coverage until load threshold.
+
+- Time: Expected O(1); worst O(m)
+- Space: O(m)
+
+**Pseudo Code**
+```text
+function probe_quadratic(i, t, m, c1, c2):
+    return (i + c1*t + c2*t*t) mod m
+```
+
+**Code**  
+- C++: [`quadratic_probing.cpp`](Hashes/Collision_Resolution/Quadratic_Probing/Implementation/quadratic_probing.cpp)  
+- Python: [`quadratic_probing.py`](Hashes/Collision_Resolution/Quadratic_Probing/Implementation/quadratic_probing.py)
+
+---
+
+###### Double Hashing
+
+**Explanation**Use two hashes: `h1(k)` for start, step `h2(k)` with `h2(k)` coprime with `m`. Probe: `i_t = (h1(k) + t·h2(k)) mod m`.
+
+- Time: Expected O(1); worst O(m)
+- Space: O(m)
+
+**Pseudo Code**
+```text
+function insert(k, v):
+    i ← h1(k); step ← h2(k)
+    for t in 0..m-1:
+        j ← (i + t*step) mod m
+        if table[j] is EMPTY/DELETED: place (k,v); return
+        if table[j].key == k: update; return
+    rehash()
+```
+
+**Code**  
+- C++: [`double_hashing.cpp`](Hashes/Collision_Resolution/Double_Hashing/Implementation/double_hashing.cpp)  
+- Python: [`double_hashing.py`](Hashes/Collision_Resolution/Double_Hashing/Implementation/double_hashing.py)
+
+---
+
+###### Cuckoo Hashing
+
+**Explanation**Two (or more) hash functions; each key resides in one of two positions. On collision, evict the resident and place the new key; may trigger a sequence of displacements. If a loop forms, rehash or grow table.
+
+- Time: Amortized O(1) find/insert; worst-case rehash
+- Space: ~2m slots for 2-way
+
+**Pseudo Code**
+```text
+tables: T1[0..m-1], T2[0..m-1]
+
+function insert(k, v):
+    for iter in 1..MAX_ITERS:
+        swap k with T1[h1(k)].key if occupied else place and return
+        if empty spot found: place and return
+        swap k with T2[h2(k)].key if occupied else place and return
+    rehash_and_retry()
+
+function find(k):
+    if T1[h1(k)].key == k: return T1[h1(k)].value
+    if T2[h2(k)].key == k: return T2[h2(k)].value
+    return ⊥
+```
+
+**Code**  
+- C++: [`cuckoo_hashing.cpp`](Hashes/Collision_Resolution/Cuckoo_Hashing/Implementation/cuckoo_hashing.cpp)  
+- Python: [`cuckoo_hashing.py`](Hashes/Collision_Resolution/Cuckoo_Hashing/Implementation/cuckoo_hashing.py)
+
+---
 
 ### Hashes: Derived Structures
 
-#### Bloom Filter
-- [`bloom_filter.cpp`](Hashes/Derived_Structures/Bloom_Filter/Implementation/bloom_filter.cpp) · [`bloom_filter.py`](Hashes/Derived_Structures/Bloom_Filter/Implementation/bloom_filter.py)
+###### Bloom Filter
 
-#### Perfect Hashing
-- [`perfect_hashing.cpp`](Hashes/Derived_Structures/Perfect_Hashing/Implementation/perfect_hashing.cpp) · [`perfect_hashing.py`](Hashes/Derived_Structures/Perfect_Hashing/Implementation/perfect_hashing.py)
+**Explanation**Probabilistic set with `m`-bit array and `k` hash functions. Supports add and possibly contains; zero false negatives, tunable false positive rate ≈ `(1 - e^{-kn/m})^k`.
 
-#### Extendible Hashing
-- [`extendible_hashing.cpp`](Hashes/Derived_Structures/Extendible_Hashing/Implementation/extendible_hashing.cpp) · [`extendible_hashing.py`](Hashes/Derived_Structures/Extendible_Hashing/Implementation/extendible_hashing.py)
+- Time: O(k) add/query
+- Space: O(m) bits
 
-#### Hopscotch Hashing
-- [`hopscotch_hashing.cpp`](Hashes/Derived_Structures/Hopscotch_Hashing/Implementation/hopscotch_hashing.cpp) · [`hopscotch_hashing.py`](Hashes/Derived_Structures/Hopscotch_Hashing/Implementation/hopscotch_hashing.py)
+**Pseudo Code**
+```text
+B ← bitarray(m) all 0
+
+function add(x):
+    for i in 1..k: B[ h_i(x) mod m ] ← 1
+
+function might_contain(x):
+    for i in 1..k:
+        if B[ h_i(x) mod m ] == 0: return false
+    return true
+```
+
+**Code**  
+- C++: [`bloom_filter.cpp`](Hashes/Derived_Structures/Bloom_Filter/Implementation/bloom_filter.cpp)  
+- Python: [`bloom_filter.py`](Hashes/Derived_Structures/Bloom_Filter/Implementation/bloom_filter.py)
+
+---
+
+###### Perfect Hashing (FKS two-level)
+
+**Explanation**For a static set, make outer table with universal hashing; for each bucket of size `s`, allocate secondary table of size `s²` and find a hash with no collisions. Guarantees O(1) worst-case lookup.
+
+- Build Time: Expected linear
+- Query Time: O(1) worst-case
+- Space: O(n)
+
+**Pseudo Code (outline)**
+```text
+build(S):
+    choose outer h
+    for each bucket B:
+        s ← |B|
+        choose h_B until perfect on B into table size s*s
+```
+
+**Code**  
+- C++: [`perfect_hashing.cpp`](Hashes/Derived_Structures/Perfect_Hashing/Implementation/perfect_hashing.cpp)  
+- Python: [`perfect_hashing.py`](Hashes/Derived_Structures/Perfect_Hashing/Implementation/perfect_hashing.py)
+
+---
+
+###### Extendible Hashing (disk-friendly)
+
+**Explanation**Directory indexed by `d` leading bits points to buckets with local depth. On overflow, split a bucket (increase its local depth, possibly double directory). Supports dynamic growth with minimal reorganization.
+
+- Time: O(1) expected I/O ops
+- Space: Directory O(2^d), buckets O(n)
+
+**Pseudo Code (outline)**
+```text
+insert(k, v):
+    b ← directory[ prefix_bits(h(k), d) ]
+    if b full:
+        if b.local_depth == d: double directory; d ← d+1
+        split b; redistribute keys by next bit; retry insert
+    else:
+        place (k,v) in b
+```
+
+**Code**  
+- C++: [`extendible_hashing.cpp`](Hashes/Derived_Structures/Extendible_Hashing/Implementation/extendible_hashing.cpp)  
+- Python: [`extendible_hashing.py`](Hashes/Derived_Structures/Extendible_Hashing/Implementation/extendible_hashing.py)
+
+---
+
+###### Hopscotch Hashing
+
+**Explanation**Open addressing with a small neighborhood of size `H` around the home bucket. If the free slot is far, move (“hop”) elements closer to maintain that each key is within `H` of its home. Excellent cache behavior and fast lookups.
+
+- Time: O(1) average; limited relocations on insert
+- Space: O(m)
+
+**Pseudo Code (high-level)**
+```text
+insert(k, v):
+    home ← h(k)
+    j ← first free slot scanning from home
+    while distance(j, home) ≥ H:
+        j' ← find_neighbor_to_hop_towards_home(j, home)
+        if not found: rehash()
+        swap entries at j and j'
+        j ← j'
+    place (k,v) at j and update neighborhood bitmap at home
+```
+
+**Code**  
+- C++: [`hopscotch_hashing.cpp`](Hashes/Derived_Structures/Hopscotch_Hashing/Implementation/hopscotch_hashing.cpp)  
+- Python: [`hopscotch_hashing.py`](Hashes/Derived_Structures/Hopscotch_Hashing/Implementation/hopscotch_hashing.py)
+
 
 ---
 
