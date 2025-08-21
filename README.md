@@ -3126,17 +3126,349 @@ insert(k, v):
 
 ## Bit
 
-Bit-level representations and algorithms for efficient storage and combinatorial operations.
+Bit manipulation lets you encode sets, speed up arithmetic, and implement DP over subsets using integer bit patterns.
 
 ### Bit: Implementation
-- **C++**: [`bitmask_uint64.cpp`](Bit/Implementation/C%2B%2B/bitmask_uint64.cpp) · [`bitset_stl_fixed.cpp`](Bit/Implementation/C%2B%2B/bitset_stl_fixed.cpp) · [`vector_bool_specialization.cpp`](Bit/Implementation/C%2B%2B/vector_bool_specialization.cpp) · [`dynamic_bitset_custom.cpp`](Bit/Implementation/C%2B%2B/dynamic_bitset_custom.cpp) · [`struct_bitfields.cpp`](Bit/Implementation/C%2B%2B/struct_bitfields.cpp)
-- **Python**: [`int_as_bitset.py`](Bit/Implementation/Python/int_as_bitset.py) · [`bytearray_bitmap.py`](Bit/Implementation/Python/bytearray_bitmap.py) · [`array_module_bitmap.py`](Bit/Implementation/Python/array_module_bitmap.py) · [`numpy_packbits_bitmap.py`](Bit/Implementation/Python/numpy_packbits_bitmap.py) · [`set_of_indices_sparse.py`](Bit/Implementation/Python/set_of_indices_sparse.py)
+- **C++**: [`bit_utils.cpp`](Bit/Implementation/C%2B%2B/bit_utils.cpp) · [`bitset_demo.cpp`](Bit/Implementation/C%2B%2B/bitset_demo.cpp) · [`binary_exponentiation.cpp`](Bit/Implementation/C%2B%2B/binary_exponentiation.cpp) · [`reverse_bits.cpp`](Bit/Implementation/C%2B%2B/reverse_bits.cpp)  
+- **Python**: [`bit_utils.py`](Bit/Implementation/Python/bit_utils.py) · [`binary_exponentiation.py`](Bit/Implementation/Python/binary_exponentiation.py) · [`reverse_bits.py`](Bit/Implementation/Python/reverse_bits.py)
 
 ### Bit: Algorithms
-- [`count_set_bits.cpp`](Bit/Algorithms/count_set_bits.cpp) · [`count_set_bits.py`](Bit/Algorithms/count_set_bits.py)
-- [`hamming_distance.cpp`](Bit/Algorithms/hamming_distance.cpp) · [`hamming_distance.py`](Bit/Algorithms/hamming_distance.py)
-- [`bitwise_subset_generation.cpp`](Bit/Algorithms/bitwise_subset_generation.cpp) · [`bitwise_subset_generation.py`](Bit/Algorithms/bitwise_subset_generation.py)
-- [`bitmask_dp_basics.cpp`](Bit/Algorithms/bitmask_dp_basics.cpp) · [`bitmask_dp_basics.py`](Bit/Algorithms/bitmask_dp_basics.py)
+
+###### Basic Bit Operations (get, set, clear, toggle)
+
+**Explanation**\
+Work with the i-th bit using masks of the form `(1 << i)`.
+
+- Time: O(1) per op
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function get_bit(x, i):
+    return (x >> i) & 1
+
+function set_bit(x, i):
+    return x | (1 << i)
+
+function clear_bit(x, i):
+    return x & ~(1 << i)
+
+function toggle_bit(x, i):
+    return x ^ (1 << i)
+```
+
+**Code**  
+- C++: [`basic_ops.cpp`](Bit/Algorithms/Basic/basic_ops.cpp)  
+- Python: [`basic_ops.py`](Bit/Algorithms/Basic/basic_ops.py)
+
+---
+
+###### Check Power of Two
+
+**Explanation**\
+A power of two has exactly one set bit. Use `x & (x - 1) == 0` and `x > 0`.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function is_power_of_two(x):
+    return x > 0 and (x & (x - 1)) == 0
+```
+
+**Code**  
+- C++: [`power_of_two.cpp`](Bit/Algorithms/Checks/power_of_two.cpp)  
+- Python: [`power_of_two.py`](Bit/Algorithms/Checks/power_of_two.py)
+
+---
+
+###### Count Set Bits (Kernighan)
+
+**Explanation**\
+Repeatedly remove the lowest set bit: `x = x & (x - 1)`.
+
+- Time: O(popcount(x))
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function popcount_kernighan(x):
+    c ← 0
+    while x ≠ 0:
+        x ← x & (x - 1)
+        c ← c + 1
+    return c
+```
+
+**Code**  
+- C++: [`count_set_bits.cpp`](Bit/Algorithms/Counting/count_set_bits.cpp)  
+- Python: [`count_set_bits.py`](Bit/Algorithms/Counting/count_set_bits.py)
+
+---
+
+###### Lowest Set Bit (lowbit) and Trailing Zeros
+
+**Explanation**\
+`lowbit(x) = x & -x` isolates the rightmost set bit. Count trailing zeros by shifting or using loops.
+
+- Time: O(1) for lowbit; O(trailing zeros) if looping
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function lowbit(x):
+    return x & (-x)
+
+function ctz_loop(x):
+    if x == 0: return word_size
+    c ← 0
+    while (x & 1) == 0:
+        c ← c + 1
+        x ← x >> 1
+    return c
+```
+
+**Code**  
+- C++: [`lowbit_ctz.cpp`](Bit/Algorithms/Utilities/lowbit_ctz.cpp)  
+- Python: [`lowbit_ctz.py`](Bit/Algorithms/Utilities/lowbit_ctz.py)
+
+---
+
+###### Isolate or Remove Rightmost Set Bit
+
+**Explanation**\
+Common masks: isolate `x & -x`; remove with `x & (x - 1)`.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function isolate_rightmost(x):
+    return x & (-x)
+
+function remove_rightmost(x):
+    return x & (x - 1)
+```
+
+**Code**  
+- C++: [`rightmost_bit.cpp`](Bit/Algorithms/Utilities/rightmost_bit.cpp)  
+- Python: [`rightmost_bit.py`](Bit/Algorithms/Utilities/rightmost_bit.py)
+
+---
+
+###### Reverse Bits (fixed width)
+
+**Explanation**\
+Swap bit fields (1,2,4,8,...) using masks and shifts to reverse within 32 or 64 bits.
+
+- Time: O(log word_size)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+# 32-bit example
+function reverse32(x):
+    x ← ((x & 0x55555555) << 1) | ((x >> 1) & 0x55555555)
+    x ← ((x & 0x33333333) << 2) | ((x >> 2) & 0x33333333)
+    x ← ((x & 0x0f0f0f0f) << 4) | ((x >> 4) & 0x0f0f0f0f)
+    x ← ((x & 0x00ff00ff) << 8) | ((x >> 8) & 0x00ff00ff)
+    x ← (x << 16) | (x >> 16)
+    return x
+```
+
+**Code**  
+- C++: [`reverse_bits.cpp`](Bit/Algorithms/Transform/reverse_bits.cpp)  
+- Python: [`reverse_bits.py`](Bit/Algorithms/Transform/reverse_bits.py)
+
+---
+
+###### Rotate Left / Right (circular)
+
+**Explanation**\
+Rotate bits by k within a fixed width `W` using masks.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function rol(x, k, W):
+    k ← k mod W
+    return ((x << k) | (x >> (W - k))) & ((1 << W) - 1)
+
+function ror(x, k, W):
+    k ← k mod W
+    return ((x >> k) | (x << (W - k))) & ((1 << W) - 1)
+```
+
+**Code**  
+- C++: [`rotate_bits.cpp`](Bit/Algorithms/Transform/rotate_bits.cpp)  
+- Python: [`rotate_bits.py`](Bit/Algorithms/Transform/rotate_bits.py)
+
+---
+
+###### Swap Two Numbers (XOR swap)
+
+**Explanation**\
+Swap without temporary storage using XOR.
+
+- Time: O(1)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function xor_swap(a, b):
+    if a == b: return (a, b)  # safe guard
+    a ← a ^ b
+    b ← a ^ b
+    a ← a ^ b
+    return (a, b)
+```
+
+**Code**  
+- C++: [`xor_swap.cpp`](Bit/Algorithms/Utilities/xor_swap.cpp)  
+- Python: [`xor_swap.py`](Bit/Algorithms/Utilities/xor_swap.py)
+
+---
+
+###### Subset Enumeration (bitmask)
+
+**Explanation**\
+Iterate all subsets of a set of size `n` using masks from `0..(1<<n)-1`.
+
+- Time: O(2^n * n) if visiting elements
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function enumerate_subsets(n):
+    for mask in 0..(1<<n)-1:
+        # process subset represented by mask
+        visit(mask)
+```
+
+**Code**  
+- C++: [`enumerate_subsets.cpp`](Bit/Algorithms/Masks/enumerate_subsets.cpp)  
+- Python: [`enumerate_subsets.py`](Bit/Algorithms/Masks/enumerate_subsets.py)
+
+---
+
+###### Submask Enumeration (DP over subsets)
+
+**Explanation**\
+Iterate all submasks of a given mask efficiently.
+
+- Time: O(3^(n/3)) overall across all masks; O(#submasks) for one mask
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function enumerate_submasks(mask):
+    sub ← mask
+    while sub ≠ 0:
+        visit(sub)
+        sub ← (sub - 1) & mask
+    visit(0)
+```
+
+**Code**  
+- C++: [`enumerate_submasks.cpp`](Bit/Algorithms/Masks/enumerate_submasks.cpp)  
+- Python: [`enumerate_submasks.py`](Bit/Algorithms/Masks/enumerate_submasks.py)
+
+---
+
+###### Binary Exponentiation (fast power, optional mod)
+
+**Explanation**\
+Exponentiate by squaring using bits of the exponent.
+
+- Time: O(log e)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function binpow(a, e, mod=None):
+    res ← 1
+    while e > 0:
+        if e & 1: res ← (res * a) if mod is None else (res * a) mod mod
+        a ← (a * a) if mod is None else (a * a) mod mod
+        e ← e >> 1
+    return res
+```
+
+**Code**  
+- C++: [`binary_exponentiation.cpp`](Bit/Algorithms/Math/binary_exponentiation.cpp)  
+- Python: [`binary_exponentiation.py`](Bit/Algorithms/Math/binary_exponentiation.py)
+
+---
+
+###### Single Non-Duplicate via XOR
+
+**Explanation**\
+If all numbers appear twice except one, XOR of all gives the unique one.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function single_non_duplicate(A):
+    x ← 0
+    for v in A: x ← x ^ v
+    return x
+```
+
+**Code**  
+- C++: [`single_non_duplicate.cpp`](Bit/Algorithms/Array/single_non_duplicate.cpp)  
+- Python: [`single_non_duplicate.py`](Bit/Algorithms/Array/single_non_duplicate.py)
+
+---
+
+###### Prefix XOR for Range Queries
+
+**Explanation**\
+Like prefix sums but with XOR: `px[i] = a[0] ^ ... ^ a[i]`. Range XOR `[l..r] = px[r] ^ px[l-1]`.
+
+- Time: O(n) build; O(1) query
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function build_prefix_xor(A):
+    px[0] ← A[0]
+    for i in 1..n-1: px[i] ← px[i-1] ^ A[i]
+    return px
+
+function range_xor(px, l, r):
+    return px[r] if l == 0 else px[r] ^ px[l-1]
+```
+
+**Code**  
+- C++: [`prefix_xor.cpp`](Bit/Algorithms/Array/prefix_xor.cpp)  
+- Python: [`prefix_xor.py`](Bit/Algorithms/Array/prefix_xor.py)
+
+---
+
+###### Gray Code (n-bit sequence)
+
+**Explanation**\
+Each successive code differs by one bit: `g = i ^ (i >> 1)`.
+
+- Time: O(2^n)
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function gray_codes(n):
+    for i in 0..(1<<n)-1:
+        yield i ^ (i >> 1)
+```
+
+**Code**  
+- C++: [`gray_code.cpp`](Bit/Algorithms/Sequences/gray_code.cpp)  
+- Python: [`gray_code.py`](Bit/Algorithms/Sequences/gray_code.py)
 
 ---
 
