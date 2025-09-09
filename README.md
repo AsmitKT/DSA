@@ -3474,111 +3474,1230 @@ function gray_codes(n):
 
 ## String
 
-String storage models and classic pattern-matching algorithms.
+String algorithms cover pattern matching, palindrome processing, sliding-window frequency tricks, and hashing-based comparisons.
 
 ### String: Implementation
-- **C++**: [`c_style_char_array.cpp`](String/Implementation/C%2B%2B/c_style_char_array.cpp) · [`c_style_dynamic_cstr.cpp`](String/Implementation/C%2B%2B/c_style_dynamic_cstr.cpp) · [`string_stl.cpp`](String/Implementation/C%2B%2B/string_stl.cpp) · [`string_view_readonly.cpp`](String/Implementation/C%2B%2B/string_view_readonly.cpp) · [`vector_char_buffer.cpp`](String/Implementation/C%2B%2B/vector_char_buffer.cpp) · [`fixed_string_template.cpp`](String/Implementation/C%2B%2B/fixed_string_template.cpp) · [`gap_buffer_text.cpp`](String/Implementation/C%2B%2B/gap_buffer_text.cpp) · [`rope_text_buffer.cpp`](String/Implementation/C%2B%2B/rope_text_buffer.cpp)
-- **Python**: [`builtin_str_immutable.py`](String/Implementation/Python/builtin_str_immutable.py) · [`bytes_sequence.py`](String/Implementation/Python/bytes_sequence.py) · [`bytearray_mutable.py`](String/Implementation/Python/bytearray_mutable.py) · [`list_of_chars_buffer.py`](String/Implementation/Python/list_of_chars_buffer.py) · [`io_stringio_builder.py`](String/Implementation/Python/io_stringio_builder.py) · [`memoryview_bytes_view.py`](String/Implementation/Python/memoryview_bytes_view.py)
+- **C++**: [`string_utils.cpp`](String/Implementation/C%2B%2B/string_utils.cpp) · [`split_join.cpp`](String/Implementation/C%2B%2B/split_join.cpp) · [`atoi_itoa.cpp`](String/Implementation/C%2B%2B/atoi_itoa.cpp)  
+- **Python**: [`string_utils.py`](String/Implementation/Python/string_utils.py) · [`split_join.py`](String/Implementation/Python/split_join.py) · [`atoi_itoa.py`](String/Implementation/Python/atoi_itoa.py)
 
 ### String: Algorithms
-- [`kmp_search.cpp`](String/Algorithms/kmp_search.cpp) · [`kmp_search.py`](String/Algorithms/kmp_search.py)
-- [`rabin_karp.cpp`](String/Algorithms/rabin_karp.cpp) · [`rabin_karp.py`](String/Algorithms/rabin_karp.py)
-- [`z_algorithm.cpp`](String/Algorithms/z_algorithm.cpp) · [`z_algorithm.py`](String/Algorithms/z_algorithm.py)
-- [`manacher_algorithm.cpp`](String/Algorithms/manacher_algorithm.cpp) · [`manacher_algorithm.py`](String/Algorithms/manacher_algorithm.py)
+
+###### Reverse String (in place)
+
+**Explanation**\
+Two-pointer swap from ends toward center.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function reverse_string(A):
+    i ← 0; j ← len(A) - 1
+    while i < j:
+        swap A[i], A[j]
+        i ← i + 1; j ← j - 1
+```
+
+**Code**  
+- C++: [`reverse_string.cpp`](String/Algorithms/Basic/reverse_string.cpp)  
+- Python: [`reverse_string.py`](String/Algorithms/Basic/reverse_string.py)
 
 ---
 
-## Number_Theory
+###### Palindrome Check
 
-Basic arithmetic utilities and classic prime/CRT/primality algorithms.
+**Explanation**\
+Compare mirrored characters or use two pointers ignoring non-alphanumerics if needed.
+
+- Time: O(n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function is_palindrome(s):
+    i ← 0; j ← len(s) - 1
+    while i < j:
+        if s[i] ≠ s[j]: return false
+        i ← i + 1; j ← j - 1
+    return true
+```
+
+**Code**  
+- C++: [`palindrome_check.cpp`](String/Algorithms/Basic/palindrome_check.cpp)  
+- Python: [`palindrome_check.py`](String/Algorithms/Basic/palindrome_check.py)
+
+---
+
+###### Anagram Test (frequency count)
+
+**Explanation**\
+Count characters and compare arrays/maps. For lowercase letters use fixed 26-size array.
+
+- Time: O(n)
+- Space: O(Σ) where Σ is alphabet size
+
+**Pseudo Code**
+```text
+function are_anagrams(a, b):
+    if len(a) ≠ len(b): return false
+    cnt[Σ] ← 0
+    for ch in a: cnt[value(ch)] += 1
+    for ch in b:
+        cnt[value(ch)] -= 1
+        if cnt[value(ch)] < 0: return false
+    return true
+```
+
+**Code**  
+- C++: [`anagram_check.cpp`](String/Algorithms/Counting/anagram_check.cpp)  
+- Python: [`anagram_check.py`](String/Algorithms/Counting/anagram_check.py)
+
+---
+
+###### Longest Substring Without Repeating Characters
+
+**Explanation**\
+Sliding window with last seen index of each character.
+
+- Time: O(n)
+- Space: O(Σ)
+
+**Pseudo Code**
+```text
+function longest_unique_substring(s):
+    last[Σ] ← -1
+    best ← 0; start ← 0
+    for i in 0..len(s)-1:
+        c ← value(s[i])
+        if last[c] ≥ start: start ← last[c] + 1
+        last[c] ← i
+        best ← max(best, i - start + 1)
+    return best
+```
+
+**Code**  
+- C++: [`longest_unique_substring.cpp`](String/Algorithms/Sliding_Window/longest_unique_substring.cpp)  
+- Python: [`longest_unique_substring.py`](String/Algorithms/Sliding_Window/longest_unique_substring.py)
+
+---
+
+###### Find All Anagrams in a String
+
+**Explanation**\
+Maintain window counts; compare to target counts or compare match counter.
+
+- Time: O(n + Σ)
+- Space: O(Σ)
+
+**Pseudo Code**
+```text
+function find_anagrams(s, p):
+    need[Σ], win[Σ] ← 0
+    for ch in p: need[value(ch)] += 1
+    match ← 0; required ← count_nonzero(need)
+    l ← 0; ans ← []
+    for r in 0..len(s)-1:
+        add s[r] to win; update match if counts equal
+        while window too large:
+            remove s[l] from win; update match; l += 1
+        if r - l + 1 == len(p) and match == required: ans.append(l)
+    return ans
+```
+
+**Code**  
+- C++: [`find_all_anagrams.cpp`](String/Algorithms/Sliding_Window/find_all_anagrams.cpp)  
+- Python: [`find_all_anagrams.py`](String/Algorithms/Sliding_Window/find_all_anagrams.py)
+
+---
+
+###### KMP (Knuth–Morris–Pratt)
+
+**Explanation**\
+Prefix-function (LPS) precomputes longest proper prefix that is also suffix to skip comparisons.
+
+- Time: O(n + m)
+- Space: O(m)
+
+**Pseudo Code**
+```text
+function build_lps(p):
+    lps[0] ← 0; j ← 0
+    for i in 1..m-1:
+        while j > 0 and p[i] ≠ p[j]: j ← lps[j-1]
+        if p[i] == p[j]: j ← j + 1
+        lps[i] ← j
+    return lps
+
+function kmp_search(s, p):
+    lps ← build_lps(p); j ← 0
+    for i in 0..n-1:
+        while j > 0 and s[i] ≠ p[j]: j ← lps[j-1]
+        if s[i] == p[j]:
+            if j == m-1: report match at i-m+1; j ← lps[j]
+            else: j ← j + 1
+```
+
+**Code**  
+- C++: [`kmp.cpp`](String/Algorithms/Pattern_Matching/kmp.cpp)  
+- Python: [`kmp.py`](String/Algorithms/Pattern_Matching/kmp.py)
+
+---
+
+###### Z-Algorithm
+
+**Explanation**\
+Computes Z array where Z[i] is length of the longest substring starting at i that matches prefix.
+
+- Time: O(n)
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function z_algorithm(s):
+    n ← len(s); Z[0] ← 0
+    l ← 0; r ← 0
+    for i in 1..n-1:
+        if i ≤ r: Z[i] ← min(r - i + 1, Z[i - l]) else Z[i] ← 0
+        while i + Z[i] < n and s[Z[i]] == s[i + Z[i]]: Z[i] += 1
+        if i + Z[i] - 1 > r: l ← i; r ← i + Z[i] - 1
+    return Z
+```
+
+**Code**  
+- C++: [`z_algorithm.cpp`](String/Algorithms/Pattern_Matching/z_algorithm.cpp)  
+- Python: [`z_algorithm.py`](String/Algorithms/Pattern_Matching/z_algorithm.py)
+
+---
+
+###### Rabin–Karp (rolling hash)
+
+**Explanation**\
+Hash the pattern and sliding windows of the text; verify matches to avoid collisions.
+
+- Time: O(n + m) expected
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function rabin_karp(s, p, B, M):
+    m ← len(p); n ← len(s)
+    powB ← B^(m-1) mod M
+    hp ← 0; hs ← 0
+    for i in 0..m-1:
+        hp ← (hp*B + value(p[i])) mod M
+        hs ← (hs*B + value(s[i])) mod M
+    for i in 0..n-m:
+        if hp == hs and s[i..i+m-1] == p: report i
+        if i+m < n:
+            hs ← ( (hs - value(s[i])*powB)*B + value(s[i+m]) ) mod M
+            if hs < 0: hs ← hs + M
+```
+
+**Code**  
+- C++: [`rabin_karp.cpp`](String/Algorithms/Pattern_Matching/rabin_karp.cpp)  
+- Python: [`rabin_karp.py`](String/Algorithms/Pattern_Matching/rabin_karp.py)
+
+---
+
+###### Polynomial Rolling Hash (prefix hash for compare)
+
+**Explanation**\
+Precompute prefix hashes and powers to compare any substring in O(1). Use double hashing to reduce collisions.
+
+- Time: O(n) build; O(1) compare
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function build_hash(s, B, M):
+    H[0] ← 0; P[0] ← 1
+    for i in 1..n:
+        H[i] ← (H[i-1]*B + value(s[i-1])) mod M
+        P[i] ← (P[i-1]*B) mod M
+    return (H, P)
+
+function get_hash(H, P, l, r, M):   # substring [l, r)
+    return (H[r] - H[l]*P[r-l]) mod M
+```
+
+**Code**  
+- C++: [`rolling_hash.cpp`](String/Algorithms/Hashing/rolling_hash.cpp)  
+- Python: [`rolling_hash.py`](String/Algorithms/Hashing/rolling_hash.py)
+
+---
+
+###### Manacher's Algorithm (longest palindromic substring)
+
+**Explanation**\
+Transforms string with separators and expands palindromes using previously computed centers.
+
+- Time: O(n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function manacher(s):
+    t ← '^#' + '#'.join(s) + '#$'
+    n ← len(t)
+    P[n] ← 0; C ← 0; R ← 0
+    for i in 1..n-2:
+        mir ← 2*C - i
+        if i < R: P[i] ← min(R - i, P[mir]) else P[i] ← 0
+        while t[i + 1 + P[i]] == t[i - 1 - P[i]]: P[i] += 1
+        if i + P[i] > R: C ← i; R ← i + P[i]
+    return max(P)
+```
+
+**Code**  
+- C++: [`manacher.cpp`](String/Algorithms/Palindromes/manacher.cpp)  
+- Python: [`manacher.py`](String/Algorithms/Palindromes/manacher.py)
+
+---
+
+###### Edit Distance (Levenshtein)
+
+**Explanation**\
+DP over prefixes with insert, delete, replace transitions.
+
+- Time: O(nm)
+- Space: O(min(n, m)) with rolling rows
+
+**Pseudo Code**
+```text
+function edit_distance(a, b):
+    n ← len(a); m ← len(b)
+    dp[0..m] ← 0..m
+    for i in 1..n:
+        prev ← dp[0]; dp[0] ← i
+        for j in 1..m:
+            tmp ← dp[j]
+            if a[i-1] == b[j-1]: dp[j] ← prev
+            else:
+                dp[j] ← 1 + min(prev, dp[j], dp[j-1])
+            prev ← tmp
+    return dp[m]
+```
+
+**Code**  
+- C++: [`edit_distance.cpp`](String/Algorithms/DP/edit_distance.cpp)  
+- Python: [`edit_distance.py`](String/Algorithms/DP/edit_distance.py)
+
+---
+
+###### Longest Common Subsequence (LCS)
+
+**Explanation**\
+Classic DP on two strings to find length of a longest subsequence present in both.
+
+- Time: O(nm)
+- Space: O(min(n, m)) with rolling arrays
+
+**Pseudo Code**
+```text
+function lcs(a, b):
+    n ← len(a); m ← len(b)
+    dp[0..m] ← 0
+    for i in 1..n:
+        prev ← 0
+        for j in 1..m:
+            cur ← dp[j]
+            if a[i-1] == b[j-1]: dp[j] ← prev + 1
+            else: dp[j] ← max(dp[j], dp[j-1])
+            prev ← cur
+    return dp[m]
+```
+
+**Code**  
+- C++: [`lcs.cpp`](String/Algorithms/DP/lcs.cpp)  
+- Python: [`lcs.py`](String/Algorithms/DP/lcs.py)
+
+---
+
+###### Suffix Array (doubling)
+
+**Explanation**\
+Sort cyclic shifts by doubling the compared length each round, keep rank pairs.
+
+- Time: O(n log n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function suffix_array(s):
+    n ← len(s)
+    p ← order of indices by characters
+    c ← equivalence classes for characters
+    k ← 0
+    while (1 << k) < n:
+        p ← sort by pair (c[i], c[(i + 2^k) mod n])
+        c_new ← new classes from sorted pairs
+        c ← c_new; k ← k + 1
+    return p
+```
+
+**Code**  
+- C++: [`suffix_array.cpp`](String/Algorithms/Suffix_Array/suffix_array.cpp)  
+- Python: [`suffix_array.py`](String/Algorithms/Suffix_Array/suffix_array.py)
+
+---
+
+###### Longest Common Prefix Array (Kasai)
+
+**Explanation**\
+Compute LCP between adjacent suffixes in suffix array using previous LCP to amortize.
+
+- Time: O(n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function lcp_kasai(s, sa):
+    n ← len(s)
+    rank[0..n-1] from sa
+    k ← 0; lcp[0..n-2]
+    for i in 0..n-1:
+        if rank[i] == n-1: k ← 0; continue
+        j ← sa[rank[i] + 1]
+        while i + k < n and j + k < n and s[i+k] == s[j+k]: k += 1
+        lcp[rank[i]] ← k
+        if k > 0: k -= 1
+    return lcp
+```
+
+**Code**  
+- C++: [`lcp_kasai.cpp`](String/Algorithms/Suffix_Array/lcp_kasai.cpp)  
+- Python: [`lcp_kasai.py`](String/Algorithms/Suffix_Array/lcp_kasai.py)
+
+---
+
+## Number Theory
+
+Basic arithmetic utilities and classic prime/CRT/primality algorithms used across competitive programming and cryptography.
 
 ### Number Theory: Implementation
-- **C++**: [`gcd.cpp`](Number_Theory/Implementation/C%2B%2B/gcd.cpp) · [`lcm.cpp`](Number_Theory/Implementation/C%2B%2B/lcm.cpp) · [`modular_exponentiation.cpp`](Number_Theory/Implementation/C%2B%2B/modular_exponentiation.cpp) · [`modular_inverse.cpp`](Number_Theory/Implementation/C%2B%2B/modular_inverse.cpp)
-- **Python**: [`gcd.py`](Number_Theory/Implementation/Python/gcd.py) · [`lcm.py`](Number_Theory/Implementation/Python/lcm.py) · [`modular_exponentiation.py`](Number_Theory/Implementation/Python/modular_exponentiation.py) · [`modular_inverse.py`](Number_Theory/Implementation/Python/modular_inverse.py)
+- **C++**: [`gcd.cpp`](Number_Theory/Implementation/C%2B%2B/gcd.cpp) · [`extended_gcd.cpp`](Number_Theory/Implementation/C%2B%2B/extended_gcd.cpp) · [`lcm.cpp`](Number_Theory/Implementation/C%2B%2B/lcm.cpp) · [`modular_exponentiation.cpp`](Number_Theory/Implementation/C%2B%2B/modular_exponentiation.cpp) · [`modular_inverse.cpp`](Number_Theory/Implementation/C%2B%2B/modular_inverse.cpp)  
+- **Python**: [`gcd.py`](Number_Theory/Implementation/Python/gcd.py) · [`extended_gcd.py`](Number_Theory/Implementation/Python/extended_gcd.py) · [`lcm.py`](Number_Theory/Implementation/Python/lcm.py) · [`modular_exponentiation.py`](Number_Theory/Implementation/Python/modular_exponentiation.py) · [`modular_inverse.py`](Number_Theory/Implementation/Python/modular_inverse.py)
 
 ### Number Theory: Algorithms
-- [`sieve_of_eratosthenes.cpp`](Number_Theory/Algorithms/sieve_of_eratosthenes.cpp) · [`sieve_of_eratosthenes.py`](Number_Theory/Algorithms/sieve_of_eratosthenes.py)
-- [`segmented_sieve.cpp`](Number_Theory/Algorithms/segmented_sieve.cpp) · [`segmented_sieve.py`](Number_Theory/Algorithms/segmented_sieve.py)
-- [`chinese_remainder_theorem.cpp`](Number_Theory/Algorithms/chinese_remainder_theorem.cpp) · [`chinese_remainder_theorem.py`](Number_Theory/Algorithms/chinese_remainder_theorem.py)
-- [`miller_rabin_primality_test.cpp`](Number_Theory/Algorithms/miller_rabin_primality_test.cpp) · [`miller_rabin_primality_test.py`](Number_Theory/Algorithms/miller_rabin_primality_test.py)
+
+###### Euclidean Algorithm (GCD)
+
+**Explanation**Repeatedly replace the larger number by its remainder on division until remainder is 0.
+
+- Time: O(log min(a,b))
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function gcd(a, b):
+    while b ≠ 0:
+        (a, b) ← (b, a mod b)
+    return a
+```
+
+**Code**  
+- C++: [`gcd_euclid.cpp`](Number_Theory/Algorithms/gcd_euclid.cpp)  
+- Python: [`gcd_euclid.py`](Number_Theory/Algorithms/gcd_euclid.py)
 
 ---
 
-## Programming_Paradigms
+###### Extended Euclidean Algorithm
 
-Problem-solving strategies with representative implementations and canonical problems.
+**Explanation**Computes integers x, y such that `ax + by = gcd(a, b)` (Bezout). Basis for modular inverses when mod and number are coprime.
 
-### Greedy
+- Time: O(log min(a,b))
+- Space: O(1) iterative / O(log) recursive
 
-#### Greedy: Implementation
-- **C++**: [`interval_struct.cpp`](Programming_Paradigms/Greedy/Implementation/C%2B%2B/interval_struct.cpp) · [`comparator_by_finish_time.cpp`](Programming_Paradigms/Greedy/Implementation/C%2B%2B/comparator_by_finish_time.cpp) · [`comparator_by_profit_deadline.cpp`](Programming_Paradigms/Greedy/Implementation/C%2B%2B/comparator_by_profit_deadline.cpp) · [`comparator_by_value_weight_ratio.cpp`](Programming_Paradigms/Greedy/Implementation/C%2B%2B/comparator_by_value_weight_ratio.cpp) · [`min_heap_wrapper.cpp`](Programming_Paradigms/Greedy/Implementation/C%2B%2B/min_heap_wrapper.cpp)
-- **Python**: [`interval_struct.py`](Programming_Paradigms/Greedy/Implementation/Python/interval_struct.py) · [`comparator_by_finish_time.py`](Programming_Paradigms/Greedy/Implementation/Python/comparator_by_finish_time.py) · [`comparator_by_profit_deadline.py`](Programming_Paradigms/Greedy/Implementation/Python/comparator_by_profit_deadline.py) · [`comparator_by_value_weight_ratio.py`](Programming_Paradigms/Greedy/Implementation/Python/comparator_by_value_weight_ratio.py) · [`min_heap_wrapper.py`](Programming_Paradigms/Greedy/Implementation/Python/min_heap_wrapper.py)
+**Pseudo Code**
+```text
+function extended_gcd(a, b):
+    (old_r, r) ← (a, b)
+    (old_s, s) ← (1, 0)
+    (old_t, t) ← (0, 1)
+    while r ≠ 0:
+        q ← old_r // r
+        (old_r, r) ← (r, old_r - q*r)
+        (old_s, s) ← (s, old_s - q*s)
+        (old_t, t) ← (t, old_t - q*t)
+    return (old_r, old_s, old_t)  # gcd, x, y
+```
 
-#### Greedy: Algorithms
-- [`activity_selection.cpp`](Programming_Paradigms/Greedy/Algorithms/activity_selection.cpp) · [`activity_selection.py`](Programming_Paradigms/Greedy/Algorithms/activity_selection.py)
-- [`fractional_knapsack.cpp`](Programming_Paradigms/Greedy/Algorithms/fractional_knapsack.cpp) · [`fractional_knapsack.py`](Programming_Paradigms/Greedy/Algorithms/fractional_knapsack.py)
-- [`job_sequencing_with_deadlines.cpp`](Programming_Paradigms/Greedy/Algorithms/job_sequencing_with_deadlines.cpp) · [`job_sequencing_with_deadlines.py`](Programming_Paradigms/Greedy/Algorithms/job_sequencing_with_deadlines.py)
-- [`huffman_coding.cpp`](Programming_Paradigms/Greedy/Algorithms/huffman_coding.cpp) · [`huffman_coding.py`](Programming_Paradigms/Greedy/Algorithms/huffman_coding.py)
-- [`optimal_merge_pattern.cpp`](Programming_Paradigms/Greedy/Algorithms/optimal_merge_pattern.cpp) · [`optimal_merge_pattern.py`](Programming_Paradigms/Greedy/Algorithms/optimal_merge_pattern.py)
-- [`interval_partitioning_min_rooms.cpp`](Programming_Paradigms/Greedy/Algorithms/interval_partitioning_min_rooms.cpp) · [`interval_partitioning_min_rooms.py`](Programming_Paradigms/Greedy/Algorithms/interval_partitioning_min_rooms.py)
-- [`min_number_of_platforms.cpp`](Programming_Paradigms/Greedy/Algorithms/min_number_of_platforms.cpp) · [`min_number_of_platforms.py`](Programming_Paradigms/Greedy/Algorithms/min_number_of_platforms.py)
-- [`greedy_coin_change.cpp`](Programming_Paradigms/Greedy/Algorithms/greedy_coin_change.cpp) · [`greedy_coin_change.py`](Programming_Paradigms/Greedy/Algorithms/greedy_coin_change.py)
-- [`gas_station_circuit.cpp`](Programming_Paradigms/Greedy/Algorithms/gas_station_circuit.cpp) · [`gas_station_circuit.py`](Programming_Paradigms/Greedy/Algorithms/gas_station_circuit.py)
-- [`assign_cookies.cpp`](Programming_Paradigms/Greedy/Algorithms/assign_cookies.cpp) · [`assign_cookies.py`](Programming_Paradigms/Greedy/Algorithms/assign_cookies.py)
-- [`candy_distribution.cpp`](Programming_Paradigms/Greedy/Algorithms/candy_distribution.cpp) · [`candy_distribution.py`](Programming_Paradigms/Greedy/Algorithms/candy_distribution.py)
-
-### Divide and Conquer
-
-#### DAC: Implementation
-- **C++**: [`dac_template.cpp`](Programming_Paradigms/Divide_and_Conquer/Implementation/C%2B%2B/dac_template.cpp) · [`merge_combine.cpp`](Programming_Paradigms/Divide_and_Conquer/Implementation/C%2B%2B/merge_combine.cpp) · [`partition_scheme_lomuto.cpp`](Programming_Paradigms/Divide_and_Conquer/Implementation/C%2B%2B/partition_scheme_lomuto.cpp) · [`partition_scheme_hoare.cpp`](Programming_Paradigms/Divide_and_Conquer/Implementation/C%2B%2B/partition_scheme_hoare.cpp) · [`conquer_inversions_combine.cpp`](Programming_Paradigms/Divide_and_Conquer/Implementation/C%2B%2B/conquer_inversions_combine.cpp)
-- **Python**: [`dac_template.py`](Programming_Paradigms/Divide_and_Conquer/Implementation/Python/dac_template.py) · [`merge_combine.py`](Programming_Paradigms/Divide_and_Conquer/Implementation/Python/merge_combine.py) · [`partition_scheme_lomuto.py`](Programming_Paradigms/Divide_and_Conquer/Implementation/Python/partition_scheme_lomuto.py) · [`partition_scheme_hoare.py`](Programming_Paradigms/Divide_and_Conquer/Implementation/Python/partition_scheme_hoare.py) · [`conquer_inversions_combine.py`](Programming_Paradigms/Divide_and_Conquer/Implementation/Python/conquer_inversions_combine.py)
-
-#### DAC: Algorithms
-- [`maximum_subarray_divide_conquer.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/maximum_subarray_divide_conquer.cpp) · [`maximum_subarray_divide_conquer.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/maximum_subarray_divide_conquer.py)
-- [`count_inversions_merge.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/count_inversions_merge.cpp) · [`count_inversions_merge.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/count_inversions_merge.py)
-- [`closest_pair_of_points_divide_conquer.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/closest_pair_of_points_divide_conquer.cpp) · [`closest_pair_of_points_divide_conquer.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/closest_pair_of_points_divide_conquer.py)
-- [`kth_element_quickselect.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/kth_element_quickselect.cpp) · [`kth_element_quickselect.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/kth_element_quickselect.py)
-- [`fast_power_binary_exponentiation.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/fast_power_binary_exponentiation.cpp) · [`fast_power_binary_exponentiation.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/fast_power_binary_exponentiation.py)
-- [`matrix_exponentiation_fast_doubling.cpp`](Programming_Paradigms/Divide_and_Conquer/Algorithms/matrix_exponentiation_fast_doubling.cpp) · [`matrix_exponentiation_fast_doubling.py`](Programming_Paradigms/Divide_and_Conquer/Algorithms/matrix_exponentiation_fast_doubling.py)
-
-### Backtracking
-
-#### Backtracking: Implementation
-- **C++**: [`backtracking_framework.cpp`](Programming_Paradigms/Backtracking/Implementation/C%2B%2B/backtracking_framework.cpp) · [`choice_generator.cpp`](Programming_Paradigms/Backtracking/Implementation/C%2B%2B/choice_generator.cpp) · [`constraint_checker.cpp`](Programming_Paradigms/Backtracking/Implementation/C%2B%2B/constraint_checker.cpp) · [`state_representation_minimal.cpp`](Programming_Paradigms/Backtracking/Implementation/C%2B%2B/state_representation_minimal.cpp)
-- **Python**: [`backtracking_framework.py`](Programming_Paradigms/Backtracking/Implementation/Python/backtracking_framework.py) · [`choice_generator.py`](Programming_Paradigms/Backtracking/Implementation/Python/choice_generator.py) · [`constraint_checker.py`](Programming_Paradigms/Backtracking/Implementation/Python/constraint_checker.py) · [`state_representation_minimal.py`](Programming_Paradigms/Backtracking/Implementation/Python/state_representation_minimal.py)
-
-#### Backtracking: Algorithms
-- [`n_queens.cpp`](Programming_Paradigms/Backtracking/Algorithms/n_queens.cpp) · [`n_queens.py`](Programming_Paradigms/Backtracking/Algorithms/n_queens.py)
-- [`sudoku_solver.cpp`](Programming_Paradigms/Backtracking/Algorithms/sudoku_solver.cpp) · [`sudoku_solver.py`](Programming_Paradigms/Backtracking/Algorithms/sudoku_solver.py)
-- [`hamiltonian_cycle.cpp`](Programming_Paradigms/Backtracking/Algorithms/hamiltonian_cycle.cpp) · [`hamiltonian_cycle.py`](Programming_Paradigms/Backtracking/Algorithms/hamiltonian_cycle.py)
-- [`word_search_grid.cpp`](Programming_Paradigms/Backtracking/Algorithms/word_search_grid.cpp) · [`word_search_grid.py`](Programming_Paradigms/Backtracking/Algorithms/word_search_grid.py)
-- [`permutations.cpp`](Programming_Paradigms/Backtracking/Algorithms/permutations.cpp) · [`permutations.py`](Programming_Paradigms/Backtracking/Algorithms/permutations.py)
-- [`combinations.cpp`](Programming_Paradigms/Backtracking/Algorithms/combinations.cpp) · [`combinations.py`](Programming_Paradigms/Backtracking/Algorithms/combinations.py)
-- [`subsets.cpp`](Programming_Paradigms/Backtracking/Algorithms/subsets.cpp) · [`subsets.py`](Programming_Paradigms/Backtracking/Algorithms/subsets.py)
-- [`combination_sum.cpp`](Programming_Paradigms/Backtracking/Algorithms/combination_sum.cpp) · [`combination_sum.py`](Programming_Paradigms/Backtracking/Algorithms/combination_sum.py)
-
-### Dynamic Programming
-
-#### DP: Implementation
-- **C++**: [`memoization_table_array.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/memoization_table_array.cpp) · [`memoization_table_map.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/memoization_table_map.cpp) · [`tabulation_1d.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/tabulation_1d.cpp) · [`tabulation_2d.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/tabulation_2d.cpp) · [`space_optimization_rolling_array.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/space_optimization_rolling_array.cpp) · [`state_compression_bitmask.cpp`](Programming_Paradigms/Dynamic_Programming/Implementation/C%2B%2B/state_compression_bitmask.cpp)
-- **Python**: [`memoization_table_array.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/memoization_table_array.py) · [`memoization_table_map.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/memoization_table_map.py) · [`tabulation_1d.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/tabulation_1d.py) · [`tabulation_2d.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/tabulation_2d.py) · [`space_optimization_rolling_array.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/space_optimization_rolling_array.py) · [`state_compression_bitmask.py`](Programming_Paradigms/Dynamic_Programming/Implementation/Python/state_compression_bitmask.py)
-
-#### DP: Algorithms
-- [`knapsack_01.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/knapsack_01.cpp) · [`knapsack_01.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/knapsack_01.py)
-- [`unbounded_knapsack.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/unbounded_knapsack.cpp) · [`unbounded_knapsack.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/unbounded_knapsack.py)
-- [`coin_change_min_coins.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/coin_change_min_coins.cpp) · [`coin_change_min_coins.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/coin_change_min_coins.py)
-- [`coin_change_number_of_ways.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/coin_change_number_of_ways.cpp) · [`coin_change_number_of_ways.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/coin_change_number_of_ways.py)
-- [`longest_common_subsequence.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_common_subsequence.cpp) · [`longest_common_subsequence.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_common_subsequence.py)
-- [`edit_distance.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/edit_distance.cpp) · [`edit_distance.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/edit_distance.py)
-- [`matrix_chain_multiplication.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/matrix_chain_multiplication.cpp) · [`matrix_chain_multiplication.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/matrix_chain_multiplication.py)
-- [`longest_increasing_subsequence_n2.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_increasing_subsequence_n2.cpp) · [`longest_increasing_subsequence_n2.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_increasing_subsequence_n2.py)
-- [`rod_cutting.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/rod_cutting.cpp) · [`rod_cutting.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/rod_cutting.py)
-- [`subset_sum.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/subset_sum.cpp) · [`subset_sum.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/subset_sum.py)
-- [`partition_equal_subset_sum.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/partition_equal_subset_sum.cpp) · [`partition_equal_subset_sum.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/partition_equal_subset_sum.py)
-- [`longest_palindromic_subsequence.cpp`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_palindromic_subsequence.cpp) · [`longest_palindromic_subsequence.py`](Programming_Paradigms/Dynamic_Programming/Algorithms/longest_palindromic_subsequence.py)
+**Code**  
+- C++: [`extended_gcd.cpp`](Number_Theory/Algorithms/extended_gcd.cpp)  
+- Python: [`extended_gcd.py`](Number_Theory/Algorithms/extended_gcd.py)
 
 ---
 
-**Notes**
-- C++ path components are URL-encoded as `C%2B%2B` in links.
-- Internal anchors follow GitHub-style heading IDs.
+###### Least Common Multiple (LCM)
+
+**Explanation**`lcm(a, b) = |a / gcd(a,b) * b|` (avoid overflow by dividing first).
+
+- Time: O(log min(a,b))
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function lcm(a, b):
+    return |a // gcd(a,b) * b|
+```
+
+**Code**  
+- C++: [`lcm_from_gcd.cpp`](Number_Theory/Algorithms/lcm_from_gcd.cpp)  
+- Python: [`lcm_from_gcd.py`](Number_Theory/Algorithms/lcm_from_gcd.py)
+
+---
+
+###### Modular Exponentiation (Binary Exponentiation)
+
+**Explanation**Exponentiate by squaring under a modulus to compute `a^e mod m` efficiently.
+
+- Time: O(log e)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function mod_pow(a, e, m):
+    a ← a mod m
+    res ← 1
+    while e > 0:
+        if e & 1: res ← (res * a) mod m
+        a ← (a * a) mod m
+        e ← e >> 1
+    return res
+```
+
+**Code**  
+- C++: [`mod_pow.cpp`](Number_Theory/Algorithms/mod_pow.cpp)  
+- Python: [`mod_pow.py`](Number_Theory/Algorithms/mod_pow.py)
+
+---
+
+###### Modular Inverse
+
+**Explanation**Find `x` such that `a·x ≡ 1 (mod m)`. Use Extended GCD if gcd(a,m)=1; for prime `m`, use Fermat: `a^(m-2) mod m`.
+
+- Time: O(log m) (EGCD or pow)
+- Space: O(1)
+
+**Pseudo Code (EGCD)**
+```text
+function mod_inverse(a, m):
+    (g, x, y) ← extended_gcd(a, m)
+    if g ≠ 1: return ⊥  # inverse doesn't exist
+    return (x mod m + m) mod m
+```
+
+**Code**  
+- C++: [`mod_inverse_egcd.cpp`](Number_Theory/Algorithms/mod_inverse_egcd.cpp) · [`mod_inverse_fermat.cpp`](Number_Theory/Algorithms/mod_inverse_fermat.cpp)  
+- Python: [`mod_inverse_egcd.py`](Number_Theory/Algorithms/mod_inverse_egcd.py) · [`mod_inverse_fermat.py`](Number_Theory/Algorithms/mod_inverse_fermat.py)
+
+---
+
+###### Sieve of Eratosthenes
+
+**Explanation**Mark multiples of each prime starting from 2 to generate all primes ≤ N.
+
+- Time: O(n log log n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function sieve(n):
+    is_prime[0..n] ← true; is_prime[0] ← is_prime[1] ← false
+    for p in 2..⌊√n⌋:
+        if is_prime[p]:
+            for x in p*p .. n step p:
+                is_prime[x] ← false
+    return is_prime
+```
+
+**Code**  
+- C++: [`sieve_of_eratosthenes.cpp`](Number_Theory/Algorithms/sieve_of_eratosthenes.cpp)  
+- Python: [`sieve_of_eratosthenes.py`](Number_Theory/Algorithms/sieve_of_eratosthenes.py)
+
+---
+
+###### Segmented Sieve
+
+**Explanation**Generate primes in range `[L, R]` using base primes up to `√R`; memory-efficient for large ranges.
+
+- Time: O((R−L+1) log log R) after base sieve
+- Space: O(R−L+1) + O(√R)
+
+**Pseudo Code**
+```text
+function segmented_sieve(L, R):
+    base ← primes up to ⌊√R⌋ via sieve
+    mark[0..R-L] ← true
+    for p in base:
+        start ← max(p*p, ((L + p - 1) // p) * p)
+        for x in start .. R step p:
+            mark[x - L] ← false
+    if L == 1: mark[0] ← false
+    return [i+L | mark[i] == true]
+```
+
+**Code**  
+- C++: [`segmented_sieve.cpp`](Number_Theory/Algorithms/segmented_sieve.cpp)  
+- Python: [`segmented_sieve.py`](Number_Theory/Algorithms/segmented_sieve.py)
+
+---
+
+###### Smallest Prime Factor (SPF) & Factorization
+
+**Explanation**Precompute `spf[i]` = smallest prime dividing `i`; factorize any `x ≤ n` in O(#prime factors).
+
+- Time: O(n) to build; O(k) per factorization
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function build_spf(n):
+    spf[i] ← i for all i
+    for p in 2..⌊√n⌋:
+        if spf[p] == p:                # p is prime
+            for x in p*p .. n step p:
+                if spf[x] == x: spf[x] ← p
+
+function factorize(x, spf):
+    f ← []
+    while x > 1:
+        p ← spf[x]; cnt ← 0
+        while x % p == 0: x //= p; cnt += 1
+        f.append((p, cnt))
+    return f
+```
+
+**Code**  
+- C++: [`spf_factorization.cpp`](Number_Theory/Algorithms/spf_factorization.cpp)  
+- Python: [`spf_factorization.py`](Number_Theory/Algorithms/spf_factorization.py)
+
+---
+
+###### Euler's Totient φ(n)
+
+**Explanation**`φ(n)` counts integers in `[1..n]` coprime to `n`. If prime factorization is `n = ∏ p_i^{a_i}`, then `φ(n) = n ∏ (1 - 1/p_i)`.
+
+- Time: O(#distinct primes of n) with factors
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function phi(n):
+    res ← n
+    p ← 2
+    while p * p ≤ n:
+        if n % p == 0:
+            while n % p == 0: n //= p
+            res ← res - res // p
+        p ← p + 1
+    if n > 1: res ← res - res // n
+    return res
+```
+
+**Code**  
+- C++: [`euler_totient.cpp`](Number_Theory/Algorithms/euler_totient.cpp)  
+- Python: [`euler_totient.py`](Number_Theory/Algorithms/euler_totient.py)
+
+---
+
+###### Chinese Remainder Theorem (CRT, coprime moduli)
+
+**Explanation**Solve `x ≡ a_i (mod m_i)` for pairwise coprime `m_i`. Combine iteratively with modular inverses.
+
+- Time: O(k · log M) where M=∏m_i
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function crt_coprime(a[0..k-1], m[0..k-1]):
+    x ← 0; M ← 1
+    for i in 0..k-1:
+        (t, inv) ← ((a[i] - x) mod m[i], mod_inverse(M mod m[i], m[i]))
+        x ← x + M * ((t * inv) mod m[i])
+        M ← M * m[i]
+        x ← x mod M
+    return (x, M)  # unique modulo M
+```
+
+**Code**  
+- C++: [`chinese_remainder_theorem.cpp`](Number_Theory/Algorithms/chinese_remainder_theorem.cpp)  
+- Python: [`chinese_remainder_theorem.py`](Number_Theory/Algorithms/chinese_remainder_theorem.py)
+
+---
+
+###### General CRT (not necessarily coprime)
+
+**Explanation**Solve `x ≡ a (mod m)`, `x ≡ b (mod n)`. A solution exists iff `a ≡ b (mod g)` where `g=gcd(m,n)`. Merge by EGCD on `m/g` and `n/g`.
+
+- Time: O(log max(m,n))
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function crt_general(a, m, b, n):
+    (g, x, y) ← extended_gcd(m, n)
+    if (a - b) mod g ≠ 0: return (⊥, 0)  # no solution
+    l ← m / g * n            # lcm
+    k ← ((b - a) / g * x) mod (n / g)
+    res ← (a + m * k) mod l
+    return (res, l)
+```
+
+**Code**  
+- C++: [`crt_general.cpp`](Number_Theory/Algorithms/crt_general.cpp)  
+- Python: [`crt_general.py`](Number_Theory/Algorithms/crt_general.py)
+
+---
+
+###### Miller–Rabin Primality Test (deterministic 64-bit)
+
+**Explanation**Write `n-1 = d·2^s`. Test random (or fixed) bases `a` by checking `a^d ≡ 1` or `a^{d·2^r} ≡ -1 (mod n)` for some `r`. Use known bases for 64-bit determinism.
+
+- Time: O(k · log n · log n) per test (k bases)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function is_probable_prime(n):
+    if n < 2 or n % 2 == 0: return n == 2
+    write n-1 = d * 2^s with d odd
+    for a in BASES:              # e.g., {2,3,5,7,11,13,17}
+        if a % n == 0: continue
+        x ← mod_pow(a, d, n)
+        if x == 1 or x == n-1: continue
+        witness ← true
+        for r in 1..s-1:
+            x ← (x * x) mod n
+            if x == n-1: witness ← false; break
+        if witness: return false
+    return true
+```
+
+**Code**  
+- C++: [`miller_rabin_primality_test.cpp`](Number_Theory/Algorithms/miller_rabin_primality_test.cpp)  
+- Python: [`miller_rabin_primality_test.py`](Number_Theory/Algorithms/miller_rabin_primality_test.py)
+
+---
+
+###### Pollard’s Rho (integer factorization, bonus)
+
+**Explanation**Randomized cycle-finding over `f(x) = x^2 + c (mod n)` to find non-trivial gcd with `n`. Often combined with Miller–Rabin.
+
+- Time: Heuristic ~n^{1/4}
+- Space: O(1)
+
+**Pseudo Code (sketch)**
+```text
+function pollard_rho(n):
+    if n % 2 == 0: return 2
+    f(x) ← (x*x + c) mod n with random c
+    x ← 2; y ← 2; d ← 1
+    while d == 1:
+        x ← f(x)
+        y ← f(f(y))
+        d ← gcd(|x - y|, n)
+    if d == n: retry with new c
+    return d
+```
+
+**Code**  
+- C++: [`pollards_rho.cpp`](Number_Theory/Algorithms/pollards_rho.cpp)  
+- Python: [`pollards_rho.py`](Number_Theory/Algorithms/pollards_rho.py)
+
+---
+
+###### nCr modulo prime (precompute factorials)
+
+**Explanation**Precompute `fact[i]` and `invfact[i] = fact[i]^{p-2} (mod p)`. Then `C(n,r) = fact[n]·invfact[r]·invfact[n-r] (mod p)`.
+
+- Time: O(n) precompute; O(1) per query
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function build_nCr(p, N):
+    fact[0] ← 1
+    for i in 1..N: fact[i] ← fact[i-1]*i mod p
+    invfact[N] ← mod_pow(fact[N], p-2, p)
+    for i in N-1..0: invfact[i] ← invfact[i+1]*(i+1) mod p
+
+function nCr(n, r):
+    if r < 0 or r > n: return 0
+    return fact[n]*invfact[r]%p*invfact[n-r]%p
+```
+
+**Code**  
+- C++: [`nCr_mod_prime.cpp`](Number_Theory/Algorithms/nCr_mod_prime.cpp)  
+- Python: [`nCr_mod_prime.py`](Number_Theory/Algorithms/nCr_mod_prime.py)
+
+---
+
+###### Fast Doubling Fibonacci (mod m)
+
+**Explanation**Use identities `F(2k) = F(k)·[2·F(k+1) − F(k)]`, `F(2k+1) = F(k+1)^2 + F(k)^2` for O(log n) computation.
+
+- Time: O(log n)
+- Space: O(1) iterative / O(log n) recursion
+
+**Pseudo Code**
+```text
+function fib_pair(n):  # returns (F(n), F(n+1)) modulo m
+    if n == 0: return (0, 1)
+    (a, b) ← fib_pair(n // 2)     # a=F(k), b=F(k+1)
+    c ← a * ((2*b - a) mod m) mod m   # F(2k)
+    d ← (a*a + b*b) mod m             # F(2k+1)
+    if n % 2 == 0: return (c, d) else: return (d, (c + d) mod m)
+```
+
+**Code**  
+- C++: [`fibonacci_fast_doubling.cpp`](Number_Theory/Algorithms/fibonacci_fast_doubling.cpp)  
+- Python: [`fibonacci_fast_doubling.py`](Number_Theory/Algorithms/fibonacci_fast_doubling.py)
+
+---
+
+###### Discrete Log (Baby-step Giant-step)
+
+**Explanation**Solve `a^x ≡ b (mod m)` for prime `m` (or when a is a generator of the group). Trade memory for speed using a hash of baby steps.
+
+- Time: O(√m)
+- Space: O(√m)
+
+**Pseudo Code**
+```text
+function bsgs(a, b, m):
+    n ← ⌈√m⌉
+    table ← {}
+    e ← 1
+    for j in 0..n-1: table[e] ← j; e ← (e * a) mod m
+    factor ← mod_inverse(mod_pow(a, n, m), m)
+    γ ← b
+    for i in 0..n:
+        if γ in table: return i*n + table[γ]
+        γ ← (γ * factor) mod m
+    return ⊥
+```
+
+**Code**  
+- C++: [`discrete_log_bsgs.cpp`](Number_Theory/Algorithms/discrete_log_bsgs.cpp)  
+- Python: [`discrete_log_bsgs.py`](Number_Theory/Algorithms/discrete_log_bsgs.py)
+
+---
+
+## Programming Paradigms
+
+Core problem-solving styles used to design algorithms: Greedy, Divide and Conquer, Backtracking, and Dynamic Programming.
+
+### Programming Paradigms: Implementation
+- **C++**: [`greedy_utils.cpp`](Programming_Paradigms/Greedy/greedy_utils.cpp) · [`divide_and_conquer_utils.cpp`](Programming_Paradigms/Divide_and_Conquer/divide_and_conquer_utils.cpp) · [`backtracking_utils.cpp`](Programming_Paradigms/Backtracking/backtracking_utils.cpp) · [`dp_utils.cpp`](Programming_Paradigms/Dynamic_Programming/dp_utils.cpp)  
+- **Python**: [`greedy_utils.py`](Programming_Paradigms/Greedy/greedy_utils.py) · [`divide_and_conquer_utils.py`](Programming_Paradigms/Divide_and_Conquer/divide_and_conquer_utils.py) · [`backtracking_utils.py`](Programming_Paradigms/Backtracking/backtracking_utils.py) · [`dp_utils.py`](Programming_Paradigms/Dynamic_Programming/dp_utils.py)
+
+#### Greedy
+
+###### Activity Selection (interval scheduling by earliest finish)
+
+**Explanation**Sort by finish time and pick the next compatible interval. Greedy choice yields an optimal schedule.
+
+- Time: O(n log n) for sort, O(n) select
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function activity_selection(intervals):  # (start, end)
+    sort intervals by end
+    last_end ← -∞
+    ans ← []
+    for (s, e) in intervals:
+        if s ≥ last_end:
+            ans.append((s, e))
+            last_end ← e
+    return ans
+```
+
+**Code**  
+- C++: [`activity_selection.cpp`](Programming_Paradigms/Greedy/activity_selection.cpp)  
+- Python: [`activity_selection.py`](Programming_Paradigms/Greedy/activity_selection.py)
+
+---
+
+###### Fractional Knapsack
+
+**Explanation**Pick items by value density. Take whole items while possible, then a fraction of the next item.
+
+- Time: O(n log n)
+- Space: O(1) extra
+
+**Pseudo Code**
+```text
+function fractional_knapsack(items, W):  # items: (value, weight)
+    sort items by value/weight descending
+    val ← 0
+    for (v, w) in items:
+        if W == 0: break
+        take ← min(w, W)
+        val ← val + v * (take / w)
+        W ← W - take
+    return val
+```
+
+**Code**  
+- C++: [`fractional_knapsack.cpp`](Programming_Paradigms/Greedy/fractional_knapsack.cpp)  
+- Python: [`fractional_knapsack.py`](Programming_Paradigms/Greedy/fractional_knapsack.py)
+
+---
+
+###### Huffman Coding
+
+**Explanation**Merge two least frequent nodes repeatedly to build an optimal prefix code.
+
+- Time: O(n log n) with priority queue
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function huffman(freq):  # map char -> frequency
+    pq ← leaf nodes of (freq, char)
+    while size(pq) > 1:
+        a ← pop_min(pq); b ← pop_min(pq)
+        push(pq, node(freq=a.f+b.f, left=a, right=b))
+    return pq.top()  # root
+```
+
+**Code**  
+- C++: [`huffman_coding.cpp`](Programming_Paradigms/Greedy/huffman_coding.cpp)  
+- Python: [`huffman_coding.py`](Programming_Paradigms/Greedy/huffman_coding.py)
+
+---
+
+###### Coin Change (canonical systems)
+
+**Explanation**For canonical coin systems (like 1, 2, 5, 10), repeatedly take the largest coin not exceeding the amount.
+
+- Time: O(n) over coin types
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function coin_change_greedy(coins, amount):
+    sort coins descending
+    used ← []
+    for c in coins:
+        k ← amount // c
+        append k copies of c to used
+        amount ← amount - k*c
+    return used if amount == 0 else ⊥
+```
+
+**Code**  
+- C++: [`coin_change_greedy.cpp`](Programming_Paradigms/Greedy/coin_change_greedy.cpp)  
+- Python: [`coin_change_greedy.py`](Programming_Paradigms/Greedy/coin_change_greedy.py)
+
+---
+
+#### Divide and Conquer
+
+###### Merge Sort
+
+**Explanation**Split, sort halves, and merge. Stable and O(n log n).
+
+- Time: O(n log n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function merge_sort(A, l, r):
+    if r - l ≤ 1: return
+    m ← (l + r) // 2
+    merge_sort(A, l, m); merge_sort(A, m, r)
+    merge(A, l, m, r)
+```
+
+**Code**  
+- C++: [`merge_sort.cpp`](Programming_Paradigms/Divide_and_Conquer/merge_sort.cpp)  
+- Python: [`merge_sort.py`](Programming_Paradigms/Divide_and_Conquer/merge_sort.py)
+
+---
+
+###### Quick Sort
+
+**Explanation**Partition around a pivot and sort partitions. In-place, average O(n log n).
+
+- Time: Average O(n log n), worst O(n²)
+- Space: O(log n) recursion
+
+**Pseudo Code**
+```text
+function quick_sort(A, l, r):
+    if l ≥ r: return
+    p ← partition(A, l, r)
+    quick_sort(A, l, p-1)
+    quick_sort(A, p+1, r)
+```
+
+**Code**  
+- C++: [`quick_sort.cpp`](Programming_Paradigms/Divide_and_Conquer/quick_sort.cpp)  
+- Python: [`quick_sort.py`](Programming_Paradigms/Divide_and_Conquer/quick_sort.py)
+
+---
+
+###### Binary Search
+
+**Explanation**Search sorted array by halving the search range each step.
+
+- Time: O(log n)
+- Space: O(1)
+
+**Pseudo Code**
+```text
+function binary_search(A, x):
+    l ← 0; r ← len(A) - 1
+    while l ≤ r:
+        m ← (l + r) // 2
+        if A[m] == x: return m
+        if A[m] < x: l ← m + 1
+        else: r ← m - 1
+    return -1
+```
+
+**Code**  
+- C++: [`binary_search.cpp`](Programming_Paradigms/Divide_and_Conquer/binary_search.cpp)  
+- Python: [`binary_search.py`](Programming_Paradigms/Divide_and_Conquer/binary_search.py)
+
+---
+
+###### Closest Pair of Points
+
+**Explanation**Sort by x, recurse on halves, merge step checks a strip sorted by y within delta.
+
+- Time: O(n log n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function closest_pair(P):   # points (x,y)
+    sort P by x
+    return dac(P)
+
+function dac(P):
+    if |P| ≤ 3: return brute_force(P)
+    split P into L and R by mid x
+    δ ← min(dac(L), dac(R))
+    S ← points within δ of mid x, sorted by y
+    for i in 0..|S|-1:
+        for j in i+1..min(i+7, |S|-1):
+            δ ← min(δ, dist(S[i], S[j]))
+    return δ
+```
+
+**Code**  
+- C++: [`closest_pair_points.cpp`](Programming_Paradigms/Divide_and_Conquer/closest_pair_points.cpp)  
+- Python: [`closest_pair_points.py`](Programming_Paradigms/Divide_and_Conquer/closest_pair_points.py)
+
+---
+
+#### Backtracking
+
+###### N-Queens
+
+**Explanation**Place queens row by row; backtrack on conflicts in columns and diagonals.
+
+- Time: Exponential (≈ O(n!))
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function solve_n_queens(n):
+    cols, diag1, diag2 ← sets()
+    board ← empty n×n
+    backtrack(row = 0)
+
+function backtrack(row):
+    if row == n: output(board); return
+    for c in 0..n-1:
+        if c not in cols and (row-c) not in diag1 and (row+c) not in diag2:
+            place(row, c); mark sets
+            backtrack(row+1)
+            unplace(row, c); unmark sets
+```
+
+**Code**  
+- C++: [`n_queens.cpp`](Programming_Paradigms/Backtracking/n_queens.cpp)  
+- Python: [`n_queens.py`](Programming_Paradigms/Backtracking/n_queens.py)
+
+---
+
+###### Subset Sum / Combination Sum
+
+**Explanation**Choose or skip each number; prune when sum exceeds target. Order choices to reduce branching.
+
+- Time: Exponential in worst case
+- Space: O(n) recursion
+
+**Pseudo Code**
+```text
+function combination_sum(A, target):
+    A ← sort(A)
+    cur ← []; ans ← []
+    dfs(0, 0)
+
+function dfs(i, s):
+    if s == target: ans.append(cur.copy()); return
+    if i == len(A) or s > target: return
+    # take A[i]
+    cur.append(A[i]); dfs(i, s + A[i]); cur.pop()
+    # skip A[i]
+    dfs(i+1, s)
+```
+
+**Code**  
+- C++: [`combination_sum.cpp`](Programming_Paradigms/Backtracking/combination_sum.cpp)  
+- Python: [`combination_sum.py`](Programming_Paradigms/Backtracking/combination_sum.py)
+
+---
+
+###### Permutations
+
+**Explanation**Swap-based generation or use visited set for strings with duplicates (dedupe via sort + skip equal neighbors).
+
+- Time: O(n·n!)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function permute(A, l):
+    if l == len(A): output(A); return
+    for i in l..len(A)-1:
+        swap(A[l], A[i])
+        permute(A, l+1)
+        swap(A[l], A[i])
+```
+
+**Code**  
+- C++: [`permutations.cpp`](Programming_Paradigms/Backtracking/permutations.cpp)  
+- Python: [`permutations.py`](Programming_Paradigms/Backtracking/permutations.py)
+
+---
+
+###### Sudoku Solver
+
+**Explanation**Fill empty cells by trying digits consistent with row, column, box constraints; backtrack on conflicts.
+
+- Time: Exponential worst case
+- Space: O(81) recursion
+
+**Pseudo Code**
+```text
+function solve_sudoku(board):
+    (r, c) ← next_empty(board)
+    if none: return true
+    for d in '1'..'9':
+        if valid(board, r, c, d):
+            board[r][c] ← d
+            if solve_sudoku(board): return true
+            board[r][c] ← '.'
+    return false
+```
+
+**Code**  
+- C++: [`sudoku_solver.cpp`](Programming_Paradigms/Backtracking/sudoku_solver.cpp)  
+- Python: [`sudoku_solver.py`](Programming_Paradigms/Backtracking/sudoku_solver.py)
+
+---
+
+#### Dynamic Programming
+
+###### 0/1 Knapsack
+
+**Explanation**DP over items and capacity. Either take or skip an item. Use 1D array from high to low capacity.
+
+- Time: O(nW)
+- Space: O(W)
+
+**Pseudo Code**
+```text
+function knapsack_01(items, W):  # (value, weight)
+    dp[0..W] ← 0
+    for (v, w) in items:
+        for c in W..w:
+            dp[c] ← max(dp[c], dp[c-w] + v)
+    return dp[W]
+```
+
+**Code**  
+- C++: [`knapsack_01.cpp`](Programming_Paradigms/Dynamic_Programming/knapsack_01.cpp)  
+- Python: [`knapsack_01.py`](Programming_Paradigms/Dynamic_Programming/knapsack_01.py)
+
+---
+
+###### Longest Increasing Subsequence (O(n log n))
+
+**Explanation**Maintain tails array where tails[k] is the minimum tail of an increasing subsequence of length k+1.
+
+- Time: O(n log n)
+- Space: O(n)
+
+**Pseudo Code**
+```text
+function lis(A):
+    tails ← []
+    for x in A:
+        i ← lower_bound(tails, x)
+        if i == len(tails): tails.append(x)
+        else: tails[i] ← x
+    return len(tails)
+```
+
+**Code**  
+- C++: [`lis.cpp`](Programming_Paradigms/Dynamic_Programming/lis.cpp)  
+- Python: [`lis.py`](Programming_Paradigms/Dynamic_Programming/lis.py)
+
+---
+
+###### Matrix Chain Multiplication
+
+**Explanation**Parenthesize matrix multiplications to minimize scalar multiplications.
+
+- Time: O(n³)
+- Space: O(n²)
+
+**Pseudo Code**
+```text
+function matrix_chain(d):  # d has dims, matrices are (d[i-1]×d[i])
+    n ← len(d) - 1
+    dp[n][n] ← 0
+    for len in 2..n:
+        for i in 1..n-len+1:
+            j ← i + len - 1
+            dp[i][j] ← ∞
+            for k in i..j-1:
+                dp[i][j] ← min(dp[i][j], dp[i][k] + dp[k+1][j] + d[i-1]*d[k]*d[j])
+    return dp[1][n]
+```
+
+**Code**  
+- C++: [`matrix_chain_multiplication.cpp`](Programming_Paradigms/Dynamic_Programming/matrix_chain_multiplication.cpp)  
+- Python: [`matrix_chain_multiplication.py`](Programming_Paradigms/Dynamic_Programming/matrix_chain_multiplication.py)
+
+---
+
+###### Coin Change (minimum coins)
+
+**Explanation**DP over amounts. For each coin, relax dp[amt] = min(dp[amt], dp[amt-coin] + 1).
+
+- Time: O(n·A) where n is coins count and A is amount
+- Space: O(A)
+
+**Pseudo Code**
+```text
+function min_coins(coins, amount):
+    dp[0..amount] ← +∞; dp[0] ← 0
+    for c in coins:
+        for a in c..amount:
+            dp[a] ← min(dp[a], dp[a-c] + 1)
+    return dp[amount] if dp[amount] < +∞ else -1
+```
+
+**Code**  
+- C++: [`coin_change_min_coins.cpp`](Programming_Paradigms/Dynamic_Programming/coin_change_min_coins.cpp)  
+- Python: [`coin_change_min_coins.py`](Programming_Paradigms/Dynamic_Programming/coin_change_min_coins.py)
